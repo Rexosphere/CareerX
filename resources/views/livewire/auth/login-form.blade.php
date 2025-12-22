@@ -67,7 +67,7 @@ new class extends Component {
                 placeholder="••••••••"
             >
                 <x-slot:append>
-                    <a href="#" class="link link-primary text-xs">Forgot?</a>
+                    <a href="{{ route('password.request') }}" class="link link-primary text-xs">Forgot?</a>
                 </x-slot:append>
             </x-input>
 
