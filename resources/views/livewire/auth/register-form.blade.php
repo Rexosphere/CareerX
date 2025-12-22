@@ -33,7 +33,7 @@ new class extends Component {
         }
 
         auth()->login($user);
-        $this->redirectRoute('home');
+        $this->redirectRoute('onboarding');
     }
 }; ?>
 
