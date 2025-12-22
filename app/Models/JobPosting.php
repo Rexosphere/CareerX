@@ -91,4 +91,27 @@ class JobPosting extends Model
     {
         return $this->applications()->count();
     }
+
+    /**
+     * Check if the current user can edit this job posting
+     */
+    public function canEdit(?User $user = null): bool
+    {
+        $user = $user ?? auth()->user();
+
+        if (!$user) {
+            return false;
+        }
+
+        // Only the employer who created the job can edit it
+        return $user->id === $this->employer_id && $user->isEmployer();
+    }
+
+    /**
+     * Check if the current user can delete this job posting
+     */
+    public function canDelete(?User $user = null): bool
+    {
+        return $this->canEdit($user);
+    }
 }
