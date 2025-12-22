@@ -2,14 +2,14 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, TwoFactorAuthenticatable;
@@ -60,6 +60,36 @@ class User extends Authenticatable
             ->take(2)
             ->map(fn ($word) => Str::substr($word, 0, 1))
             ->implode('');
+    }
+
+    // Student Profile Relationship
+    public function studentProfile()
+    {
+        return $this->hasOne(StudentProfile::class);
+    }
+
+    // Job Postings (for employers)
+    public function jobPostings()
+    {
+        return $this->hasMany(JobPosting::class, 'employer_id');
+    }
+
+    // Applications (for students)
+    public function applications()
+    {
+        return $this->hasMany(Application::class, 'student_id');
+    }
+
+    // Blog Posts (as author)
+    public function blogs()
+    {
+        return $this->hasMany(Blog::class, 'author_id');
+    }
+
+    // Saved Jobs (for students)
+    public function savedJobs()
+    {
+        return $this->hasMany(SavedJob::class);
     }
 
     // RBAC Relationships and Methods

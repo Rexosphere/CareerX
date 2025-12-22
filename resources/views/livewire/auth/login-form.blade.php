@@ -18,7 +18,7 @@ new class extends Component {
 
         if (auth()->attempt(['email' => $this->email, 'password' => $this->password], $this->remember)) {
             session()->regenerate();
-            $this->redirectRoute('home');
+            $this->redirectRoute('dashboard');
         } else {
             $this->addError('email', 'Invalid credentials.');
         }
@@ -67,7 +67,7 @@ new class extends Component {
                 placeholder="••••••••"
             >
                 <x-slot:append>
-                    <a href="#" class="link link-primary text-xs">Forgot?</a>
+                    <a href="{{ route('password.request') }}" class="link link-primary text-xs">Forgot?</a>
                 </x-slot:append>
             </x-input>
 

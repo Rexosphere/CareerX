@@ -55,12 +55,86 @@ new class extends Component {
 
     public function saveJob(): void
     {
-        // Implement save job logic
+        if (!auth()->check()) {
+            session()->flash('error', 'Please login to save jobs.');
+            $this->redirectRoute('login');
+            return;
+        }
+
+        $job = \App\Models\JobPosting::find($this->jobId);
+
+        if (!$job) {
+            session()->flash('error', 'Job not found.');
+            return;
+        }
+
+        // Toggle save/unsave
+        $existingSave = auth()->user()->savedJobs()
+            ->where('job_posting_id', $this->jobId)
+            ->first();
+
+        if ($existingSave) {
+            $existingSave->delete();
+            session()->flash('message', 'Job removed from saved jobs.');
+        } else {
+            auth()->user()->savedJobs()->create([
+                'job_posting_id' => $this->jobId,
+            ]);
+            session()->flash('message', 'Job saved successfully!');
+        }
+
+        $this->dispatch('job-saved');
     }
 
     public function applyNow(): void
     {
-        // Implement apply logic
+        if (!auth()->check()) {
+            session()->flash('error', 'Please login to apply for jobs.');
+            $this->redirectRoute('login');
+            return;
+        }
+
+        if (!auth()->user()->isStudent()) {
+            session()->flash('error', 'Only students can apply for jobs.');
+            return;
+        }
+
+        $job = \App\Models\JobPosting::find($this->jobId);
+
+        if (!$job) {
+            session()->flash('error', 'Job not found.');
+            return;
+        }
+
+        if (!$job->isOpen()) {
+            session()->flash('error', 'This job is no longer accepting applications.');
+            return;
+        }
+
+        // Check if already applied
+        $existingApplication = auth()->user()->applications()
+            ->where('job_id', $this->jobId)
+            ->first();
+
+        if ($existingApplication) {
+            session()->flash('error', 'You have already applied for this job.');
+            return;
+        }
+
+        // Get student's CV from profile
+        $studentProfile = auth()->user()->studentProfile;
+        $cvPath = $studentProfile ? $studentProfile->cv_path : null;
+
+        // Create application
+        auth()->user()->applications()->create([
+            'job_id' => $this->jobId,
+            'cv_path' => $cvPath,
+            'status' => 'pending',
+        ]);
+
+        session()->flash('message', 'Application submitted successfully!');
+        $this->closeModal();
+        $this->dispatch('application-submitted');
     }
 }; ?>
 
