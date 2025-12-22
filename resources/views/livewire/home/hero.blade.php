@@ -21,6 +21,12 @@ new class extends Component {
             <p class="text-lg md:text-xl text-base-content/80 mb-8">
                 The official bridge between University of Moratuwa's top engineering talent and the industry's leading opportunities.
             </p>
+
+            <!-- Search Bar -->
+            <div class="mb-8">
+                <livewire:home.search-bar />
+            </div>
+
             <div class="flex gap-4 justify-center flex-wrap">
                 <button class="btn btn-neutral btn-lg">Find Talent</button>
                 <button class="btn btn-outline btn-lg">Search Jobs</button>
