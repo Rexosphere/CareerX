@@ -86,6 +86,12 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Blog::class, 'author_id');
     }
 
+    // Saved Jobs (for students)
+    public function savedJobs()
+    {
+        return $this->hasMany(SavedJob::class);
+    }
+
     // RBAC Relationships and Methods
     public function roles()
     {
