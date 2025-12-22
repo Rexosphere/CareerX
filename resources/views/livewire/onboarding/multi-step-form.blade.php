@@ -140,13 +140,14 @@ new class extends Component {
                 <p class="text-primary text-sm font-bold uppercase">Step {{ $currentStep }} of {{ $totalSteps }}</p>
                 <span class="text-base-content/60 text-sm">{{ $this->getProgressPercentage() }}% Completed</span>
             </div>
-            <progress class="progress progress-primary w-full" value="{{ $this->getProgressPercentage() }}" max="100"></progress>
+            <progress class="progress progress-primary w-full" value="{{ $this->getProgressPercentage() }}"
+                max="100"></progress>
             <p class="text-sm font-medium text-base-content mt-2">
                 {{ $currentStep === 1 ? 'Personal Details' : 'Skills & Resume' }}
             </p>
         </div>
 
-        <div class="divider"></div>
+        <div class="divider mt-0"></div>
 
         <!-- Success Message -->
         @if (session()->has('message'))
@@ -161,58 +162,39 @@ new class extends Component {
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <!-- Full Name (2/3 width) -->
                     <div class="md:col-span-2">
-                        <x-input
-                            label="Full Name"
-                            wire:model="full_name"
-                            icon="o-user"
-                            placeholder="e.g. Chamara Silva"
-                        />
+                        <x-input label="Full Name" wire:model="full_name" icon="o-user" placeholder="e.g. Chamara Silva" />
                     </div>
 
                     <!-- Student ID (1/3 width) -->
                     <div>
-                        <x-input
-                            label="Student ID"
-                            wire:model="student_id"
-                            icon="o-identification"
-                            placeholder="e.g. 190000X"
-                            class="uppercase"
-                        />
+                        <x-input label="Student ID" wire:model="student_id" icon="o-identification"
+                            placeholder="e.g. 190000X" class="uppercase" />
                     </div>
                 </div>
 
                 <!-- Department -->
-                <x-select
-                    label="Department"
-                    wire:model="department"
-                    icon="o-academic-cap"
-                    :options="[
-                        ['id' => '', 'name' => 'Select your department'],
-                        ['id' => 'cse', 'name' => 'Computer Science & Engineering'],
-                        ['id' => 'entc', 'name' => 'Electronic & Telecommunication Engineering'],
-                        ['id' => 'civil', 'name' => 'Civil Engineering'],
-                        ['id' => 'mech', 'name' => 'Mechanical Engineering'],
-                        ['id' => 'it', 'name' => 'Information Technology'],
-                        ['id' => 'archi', 'name' => 'Architecture'],
-                        ['id' => 'nds', 'name' => 'Interdisciplinary Studies'],
-                    ]"
-                    option-value="id"
-                    option-label="name"
-                />
+                <x-select label="Department" wire:model="department" icon="o-academic-cap" :options="[
+                ['id' => '', 'name' => 'Select your department'],
+                ['id' => 'cse', 'name' => 'Computer Science & Engineering'],
+                ['id' => 'entc', 'name' => 'Electronic & Telecommunication Engineering'],
+                ['id' => 'civil', 'name' => 'Civil Engineering'],
+                ['id' => 'mech', 'name' => 'Mechanical Engineering'],
+                ['id' => 'it', 'name' => 'Information Technology'],
+                ['id' => 'archi', 'name' => 'Architecture'],
+                ['id' => 'nds', 'name' => 'Interdisciplinary Studies'],
+            ]"
+                    option-value="id" option-label="name" />
 
                 <!-- About Me -->
-                <x-textarea
-                    label="About Me"
-                    wire:model="about_me"
+                <x-textarea label="About Me" wire:model="about_me"
                     placeholder="Briefly describe your academic interests, career goals, and what makes you unique..."
-                    rows="4"
-                    hint="Optional"
-                />
+                    rows="4" hint="Optional" />
 
                 <!-- Action Buttons -->
                 <div class="flex justify-end gap-4 pt-4 border-t border-base-300">
                     <x-button label="Cancel" class="btn-ghost hidden md:inline-flex" />
-                    <x-button label="Next Step" icon-right="o-arrow-right" class="btn-primary" type="submit" spinner="nextStep" />
+                    <x-button label="Next Step" icon-right="o-arrow-right" class="btn-primary" type="submit"
+                        spinner="nextStep" />
                 </div>
             </form>
         @endif
@@ -223,30 +205,23 @@ new class extends Component {
                 <!-- Skills Section -->
                 <div>
                     <label class="label">
-                        <span class="label-text flex items-center gap-2">
+                        <span class="label-text flex items-center  mb-2 gap-2">
                             <x-icon name="o-academic-cap" class="w-4 h-4 text-primary" />
-                            <span class="font-medium">Key Skills</span>
+                            <span class="font-medium ">Key Skills</span>
                         </span>
                     </label>
 
                     <div class="space-y-3">
-                        <x-input
-                            wire:model="skillInput"
-                            wire:keydown.enter.prevent="addSkill"
-                            placeholder="Type a skill (e.g., Python, UI Design) and hit Enter..."
-                            icon="o-plus-circle"
-                        />
+                        <x-input wire:model="skillInput" wire:keydown.enter.prevent="addSkill"
+                            placeholder="Type a skill (e.g., Python, UI Design) and hit Enter..." icon="o-plus-circle" />
 
                         <!-- Skill Chips -->
                         <div class="flex flex-wrap gap-2">
                             @foreach ($skills as $index => $skill)
                                 <div class="badge badge-primary badge-lg gap-2">
                                     <span>{{ $skill }}</span>
-                                    <button
-                                        wire:click="removeSkill({{ $index }})"
-                                        type="button"
-                                        class="btn btn-ghost btn-xs btn-circle"
-                                    >
+                                    <button wire:click="removeSkill({{ $index }})" type="button"
+                                        class="btn btn-ghost btn-xs btn-circle">
                                         <x-icon name="o-x-mark" class="w-3 h-3" />
                                     </button>
                                 </div>
@@ -256,7 +231,7 @@ new class extends Component {
                 </div>
 
                 <!-- CV Upload Section -->
-                <div>
+                <div class="w-full">
                     <label class="label">
                         <span class="label-text flex items-center gap-2">
                             <x-icon name="o-document-text" class="w-4 h-4 text-primary" />
@@ -264,14 +239,19 @@ new class extends Component {
                         </span>
                     </label>
 
-                    <x-file wire:model="cv_file" accept="application/pdf" hint="Max file size: 5MB. PDF only.">
-                        <div class="flex flex-col items-center justify-center py-10 text-center">
-                            <div class="mb-4 rounded-full bg-primary/10 p-3">
+                    <x-file wire:model="cv_file" accept="application/pdf" hint="Max file size: 5MB. PDF only."
+                        class="w-full text-center">
+                        <div class="flex flex-col w-full h-full items-center justify-center py-8">
+                            <div class="mb-3 rounded-full bg-primary/10 p-3 mx-auto">
                                 <x-icon name="o-cloud-arrow-up" class="w-8 h-8 text-primary" />
                             </div>
-                            <p class="mb-1 text-sm font-medium">
-                                <span class="text-primary">Click to browse</span> or drag CV here
-                            </p>
+                            <div class="text-center w-full">
+                                <p class="text-sm font-medium">
+                                    <span class="text-primary font-bold hover:underline cursor-pointer">Click to
+                                        browse</span>
+                                    <span class="opacity-70">or drag CV here</span>
+                                </p>
+                            </div>
                         </div>
                     </x-file>
 
@@ -282,11 +262,7 @@ new class extends Component {
                                 <p class="font-medium">{{ $cv_file->getClientOriginalName() }}</p>
                                 <p class="text-xs opacity-70">{{ number_format($cv_file->getSize() / 1024 / 1024, 1) }} MB</p>
                             </div>
-                            <button
-                                wire:click="$set('cv_file', null)"
-                                type="button"
-                                class="btn btn-ghost btn-sm btn-circle"
-                            >
+                            <button wire:click="$set('cv_file', null)" type="button" class="btn btn-ghost btn-sm btn-circle">
                                 <x-icon name="o-trash" class="w-4 h-4" />
                             </button>
                         </div>
@@ -295,19 +271,9 @@ new class extends Component {
 
                 <!-- Action Buttons -->
                 <div class="flex justify-between pt-4 border-t border-base-300">
-                    <x-button
-                        label="Back"
-                        icon="o-arrow-left"
-                        wire:click="previousStep"
-                        class="btn-ghost"
-                    />
-                    <x-button
-                        label="Finish Setup"
-                        icon-right="o-check"
-                        class="btn-primary"
-                        type="submit"
-                        spinner="submit"
-                    />
+                    <x-button label="Back" icon="o-arrow-left" wire:click="previousStep" class="btn-ghost" />
+                    <x-button label="Finish Setup" icon-right="o-check" class="btn-primary" type="submit"
+                        spinner="submit" />
                 </div>
             </form>
         @endif

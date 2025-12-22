@@ -9,7 +9,9 @@ class StudentProfile extends Model
 {
     protected $fillable = [
         'user_id',
+        'profile_photo_path', // Added
         'student_id',
+        'phone', // Added
         'course',
         'year',
         'bio',

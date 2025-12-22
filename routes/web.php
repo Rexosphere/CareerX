@@ -38,6 +38,10 @@ Route::get('/login', function () {
     return view('pages.auth.login');
 })->name('login');
 
+Route::get('/company-login', function () {
+    return view('pages.auth.company-login');
+})->name('company-login');
+
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', function () {
         return view('pages.dashboard.index');
@@ -46,6 +50,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/onboarding', function () {
         return view('pages.onboarding.index');
     })->name('onboarding');
+
+    Route::get('/profile', function () {
+        return view('pages.profile.index');
+    })->name('profile');
 
     Route::post('/logout', function () {
         auth()->logout();
