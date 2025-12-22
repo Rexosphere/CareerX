@@ -75,11 +75,45 @@ new class extends Component {
     {
         $this->validate();
 
-        // TODO: Save the onboarding data
+        // Handle CV file upload
+        $cvPath = null;
+        if ($this->cv_file) {
+            $cvPath = $this->cv_file->store('cvs', 'public');
+        }
+
+        // Map department abbreviation to full course name
+        $departmentMap = [
+            'cse' => 'Computer Science & Engineering',
+            'entc' => 'Electronic & Telecommunication Engineering',
+            'civil' => 'Civil Engineering',
+            'mech' => 'Mechanical Engineering',
+            'it' => 'Information Technology',
+            'archi' => 'Architecture',
+            'nds' => 'Interdisciplinary Studies',
+        ];
+
+        // Create or update student profile
+        auth()->user()->studentProfile()->updateOrCreate(
+            ['user_id' => auth()->id()],
+            [
+                'student_id' => $this->student_id,
+                'course' => $departmentMap[$this->department] ?? $this->department,
+                'year' => 1, // Default to first year, can be enhanced later
+                'bio' => $this->about_me,
+                'skills' => $this->skills,
+                'cv_path' => $cvPath,
+                'available_for_hire' => true,
+            ]
+        );
+
+        // Update user's full name if provided
+        auth()->user()->update([
+            'name' => $this->full_name,
+        ]);
+
         session()->flash('message', 'Profile setup completed successfully!');
 
-        // Redirect to dashboard or home
-        // $this->redirect(route('home'));
+        $this->redirect(route('dashboard'));
     }
 
     public function getProgressPercentage(): int

@@ -62,6 +62,12 @@ class User extends Authenticatable
             ->implode('');
     }
 
+    // Student Profile Relationship
+    public function studentProfile()
+    {
+        return $this->hasOne(StudentProfile::class);
+    }
+
     // RBAC Relationships and Methods
     public function roles()
     {
