@@ -102,6 +102,10 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/profile', function () {
         return view('pages.profile.index');
     })->name('profile');
+
+    Route::get('/academia', function () {
+        return view('pages.academia.index');
+    })->name('academia');
 });
 
 Route::match(['get', 'post'], '/logout', LogoutController::class)->name('logout');

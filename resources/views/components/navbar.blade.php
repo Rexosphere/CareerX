@@ -148,6 +148,7 @@
                         @else
                             <li class="menu-title mt-2 text-primary">Student</li>
                             <li><a href="{{ route('profile') }}">My Profile</a></li>
+                            <li><a href="{{ route('academia') }}">Research & Academia</a></li>
                         @endif
                         <div class="divider my-1"></div>
                         <li>
@@ -217,6 +218,7 @@
                                     Panel</a></li>
                         @else
                             <li><a href="{{ route('profile') }}"><x-icon name="o-user" class="w-4 h-4" /> My Profile</a></li>
+                            <li><a href="{{ route('academia') }}"><x-icon name="o-academic-cap" class="w-4 h-4" /> Research & Academia</a></li>
                         @endif
 
                         <div class="divider my-1"></div>
