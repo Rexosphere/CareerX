@@ -24,14 +24,16 @@ new class extends Component {
     {
         $this->validate();
 
-        Company::create([
+        $company = Company::create([
             'name' => $this->name,
             'email' => $this->email,
             'password' => Hash::make($this->password),
-            'status' => 'pending',
+            'status' => 'active',
         ]);
 
-        $this->registered = true;
+        auth('company')->login($company);
+
+        $this->redirectRoute('company.dashboard', navigate: true);
     }
 }; ?>
 

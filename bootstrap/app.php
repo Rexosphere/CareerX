@@ -17,8 +17,8 @@ return Application::configure(basePath: dirname(__DIR__))
                 if (auth('admin')->check())
                     return route('admin.dashboard');
                 if (auth('company')->check())
-                    return route('company.profile');
-                return route('dashboard');
+                    return route('company.dashboard');
+                return route('profile');
             }
         );
 

@@ -16,7 +16,7 @@ new class extends Component {
     public function mount(): void
     {
         if (auth('company')->check()) {
-            $this->redirectRoute('dashboard');
+            $this->redirectRoute('company.dashboard');
         }
     }
 
@@ -33,7 +33,7 @@ new class extends Component {
             }
 
             session()->regenerate();
-            $this->redirectRoute('dashboard', navigate: true);
+            $this->redirectRoute('company.dashboard', navigate: true);
         } else {
             throw ValidationException::withMessages([
                 'company_id' => 'The provided credentials do not match our records.',

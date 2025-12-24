@@ -15,6 +15,9 @@ Route::get('/jobs', function () {
     return view('pages.jobs.index');
 })->name('jobs.index');
 
+Route::get('/courses', [App\Http\Controllers\CourseController::class, 'index'])->name('courses.index');
+Route::get('/courses/{course}', [App\Http\Controllers\CourseController::class, 'show'])->name('courses.show');
+
 Route::get('/students', function () {
     return view('pages.students.index');
 })->name('students.index');
@@ -67,6 +70,21 @@ Route::middleware(['auth:company'])->group(function () {
     Route::get('/jobs/create', function () {
         return view('pages.jobs.create');
     })->name('jobs.create');
+    Route::get('/jobs/{job}/applications', function ($jobId) {
+        $job = \App\Models\JobPosting::findOrFail($jobId);
+        if ($job->company_id !== auth('company')->id()) {
+            abort(403);
+        }
+        return view('pages.jobs.applications', ['job' => $job]);
+    })->name('jobs.applications');
+    Route::get('/jobs/{job}/edit', function ($jobId) {
+        $job = \App\Models\JobPosting::findOrFail($jobId);
+        // Authorization check
+        if ($job->company_id !== auth('company')->id()) {
+            abort(403);
+        }
+        return view('pages.jobs.edit', ['job' => $job]);
+    })->name('jobs.edit');
     Route::get('/applicants', [ApplicantController::class, 'index'])->name('applicants.index');
 
     // Reuse dashboard for company for now if needed, or redirect
@@ -77,10 +95,6 @@ Route::middleware(['auth:company'])->group(function () {
 
 // Student (Web) Routes
 Route::middleware(['auth:web'])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('pages.dashboard.index');
-    })->name('dashboard');
-
     Route::get('/onboarding', function () {
         return view('pages.onboarding.index');
     })->name('onboarding');

@@ -1,4 +1,4 @@
-<x-layouts.main title="Admin Access Control">
+<x-layouts.main title="Admin Access Control" :showNavbar="false" :showFooter="false">
     <div
         class="min-h-[calc(100vh-4rem)] flex items-center justify-center p-4 bg-gradient-to-br from-base-200 to-base-300 relative overflow-hidden">
         <!-- Abstract background pattern -->

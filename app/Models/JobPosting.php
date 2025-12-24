@@ -17,6 +17,7 @@ class JobPosting extends Model
         'company_name',
         'company_logo',
         'description',
+        'prerequisites',
         'location',
         'type',
         'category',

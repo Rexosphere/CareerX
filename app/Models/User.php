@@ -70,11 +70,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasOne(StudentProfile::class);
     }
 
-    // Job Postings (for employers)
-    public function jobPostings()
-    {
-        return $this->hasMany(JobPosting::class, 'employer_id');
-    }
+
 
     // Applications (for students)
     public function applications()

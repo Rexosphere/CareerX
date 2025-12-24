@@ -13,6 +13,8 @@ class Company extends Authenticatable
         'name',
         'email',
         'password',
+        'logo_path',
+        'description',
         'status',
         'verification_token',
         'verified_at',

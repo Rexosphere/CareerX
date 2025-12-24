@@ -78,10 +78,10 @@ new class extends Component {
             <!-- Email -->
             <div class="form-control">
                 <label class="label">
-                    <span class="label-text font-medium">Administrator Email</span>
+                    <span class="label-text mb-2 font-medium">Administrator Email</span>
                 </label>
                 <label
-                    class="input input-bordered flex items-center gap-2 focus-within:border-error focus-within:ring-error text-base-content/80 bg-base-200/50">
+                    class="input w-full input-bordered flex items-center gap-2 focus-within:border-error focus-within:ring-error text-base-content/80 bg-base-200/50">
                     <x-icon name="o-user" class="w-5 h-5 opacity-70" />
                     <input type="email" wire:model="email" class="grow" placeholder="admin@careerx.com" />
                 </label>
@@ -90,10 +90,10 @@ new class extends Component {
             <!-- Password -->
             <div class="form-control">
                 <label class="label">
-                    <span class="label-text font-medium">Secure Key</span>
+                    <span class="label-text mb-2 font-medium">Secure Key</span>
                 </label>
                 <label
-                    class="input input-bordered flex items-center gap-2 focus-within:border-error focus-within:ring-error text-base-content/80 bg-base-200/50">
+                    class="input w-full input-bordered flex items-center gap-2 focus-within:border-error focus-within:ring-error text-base-content/80 bg-base-200/50">
                     <x-icon name="o-lock-closed" class="w-5 h-5 opacity-70" />
                     <input type="password" wire:model="password" class="grow" placeholder="••••••••" />
                 </label>

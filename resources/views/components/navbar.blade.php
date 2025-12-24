@@ -42,7 +42,7 @@
                             </ul>
                         </details>
                     </li>
-                    <li class="px-2"><a href="{{ route('students.index') }}" class="font-medium text-sm">Courses</a></li>
+                    <li class="px-2"><a href="{{ route('courses.index') }}" class="font-medium text-sm">Courses</a></li>
                     <li class="px-2">
                         <details x-data @click.outside="$el.removeAttribute('open')">
                             <summary class="font-medium text-sm">Career Advice</summary>
@@ -58,16 +58,62 @@
                             Us</a></li>
 
                     @if($company)
-                        <li class="px-2 border-l border-base-300 ml-2 pl-4"><a href="{{ route('applicants.index') }}"
-                                class="font-bold text-sm text-primary">Applicants</a></li>
+                        <li class="px-2 border-l border-base-300 ml-2 pl-4"><a href="{{ route('students.index') }}"
+                                class="font-bold text-sm text-primary">Job Seekers</a></li>
                     @endif
                 @else
-                    {{-- Minimal Admin Nav --}}
-                    <li class="px-2">
-                        <a href="{{ route('admin.dashboard') }}"
-                            class="flex items-center gap-2 font-bold text-primary group transition-all">
-                            <x-icon name="o-shield-check" class="w-5 h-5 group-hover:scale-110" />
-                            <span>Administrator Control Center</span>
+                    {{-- Admin Nav --}}
+                    <li class="px-1">
+                        <a href="{{ route('admin.dashboard', ['tab' => 'overview']) }}"
+                            class="font-bold text-sm {{ request('tab') == 'overview' ? 'text-primary' : 'text-base-content/70' }} flex items-center gap-2">
+                            <x-icon name="o-squares-2x2" class="w-4 h-4" />
+                            Overview
+                        </a>
+                    </li>
+                    <li class="px-1">
+                        <details x-data @click.outside="$el.removeAttribute('open')"
+                            class="{{ request('tab') == 'courses' ? 'text-primary' : '' }}">
+                            <summary class="font-bold text-sm flex items-center gap-2">
+                                <x-icon name="o-academic-cap" class="w-4 h-4" />
+                                Courses
+                            </summary>
+                            <ul class="p-2 bg-base-100 rounded-t-none w-56 shadow-lg z-50">
+                                <li>
+                                    <a href="{{ route('admin.dashboard', ['tab' => 'courses', 'subTab' => 'list']) }}"
+                                        class="{{ request('tab') == 'courses' && request('subTab') == 'list' ? 'font-bold text-primary bg-primary/5' : '' }}">
+                                        <x-icon name="o-list-bullet" class="w-4 h-4" />
+                                        View All Courses
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('admin.dashboard', ['tab' => 'courses', 'subTab' => 'form']) }}"
+                                        class="{{ request('tab') == 'courses' && request('subTab') == 'form' ? 'font-bold text-primary bg-primary/5' : '' }}">
+                                        <x-icon name="o-plus-circle" class="w-4 h-4" />
+                                        Add New Course
+                                    </a>
+                                </li>
+                            </ul>
+                        </details>
+                    </li>
+                    <li class="px-1">
+                        <a href="{{ route('admin.dashboard', ['tab' => 'companies']) }}"
+                            class="font-bold text-sm {{ request('tab') == 'companies' || !request('tab') ? 'text-primary' : 'text-base-content/70' }} flex items-center gap-2">
+                            <x-icon name="o-building-office" class="w-4 h-4" />
+                            Companies
+                        </a>
+                    </li>
+                    <li class="px-1">
+                        <a href="{{ route('admin.dashboard', ['tab' => 'students']) }}"
+                            class="font-bold text-sm {{ request('tab') == 'students' ? 'text-primary' : 'text-base-content/70' }} flex items-center gap-2">
+                            <x-icon name="o-user-group" class="w-4 h-4" />
+                            Students
+                        </a>
+                    </li>
+                    <li class="px-1">
+                        <a href="{{ route('admin.dashboard', ['tab' => 'jobs']) }}"
+                            class="font-bold text-sm {{ request('tab') == 'jobs' ? 'text-primary' : 'text-base-content/70' }} flex items-center gap-2">
+                            <x-icon name="o-briefcase" class="w-4 h-4" />
+                            Jobs
                         </a>
                     </li>
                 @endif
@@ -85,13 +131,14 @@
                     class="menu menu-sm dropdown-content mt-3 z-10 p-2 shadow-lg bg-base-100 rounded-box w-52 border border-base-300">
                     @if(!$admin)
                         <li><a href="{{ route('jobs.index') }}">Jobs</a></li>
-                        <li><a href="{{ route('students.index') }}">Courses</a></li>
+                        <li><a href="{{ route('courses.index') }}">Courses</a></li>
                         <li><a href="{{ route('resources.index') }}">About Us</a></li>
                     @endif
 
                     @if($anyUser)
                         @if($company)
                             <li class="menu-title mt-2 text-primary">Company</li>
+                            <li><a href="{{ route('company.dashboard') }}">Dashboard</a></li>
                             <li><a href="{{ route('applicants.index') }}">Applicants</a></li>
                             <li><a href="{{ route('jobs.create') }}">Post Job</a></li>
                             <li><a href="{{ route('company.profile') }}">Company Profile</a></li>
@@ -100,7 +147,6 @@
                             <li><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
                         @else
                             <li class="menu-title mt-2 text-primary">Student</li>
-                            <li><a href="{{ route('dashboard') }}">Dashboard</a></li>
                             <li><a href="{{ route('profile') }}">My Profile</a></li>
                         @endif
                         <div class="divider my-1"></div>
@@ -124,7 +170,7 @@
                 <!-- Desktop Auth Buttons -->
                 <div class="hidden md:flex items-center gap-3">
                     <a href="{{ route('login') }}" class="btn btn-primary py-2 btn-sm hidden sm:inline-flex">
-                        Applicant Login
+                        Student Login
                     </a>
                     <a href="{{ route('company-login') }}" class="btn btn-primary py-2 btn-sm">
                         Company Login
@@ -161,14 +207,15 @@
                         </li>
 
                         @if($company)
+                            <li><a href="{{ route('company.dashboard') }}"><x-icon name="o-squares-2x2" class="w-4 h-4" />
+                                    Dashboard</a></li>
                             <li><a href="{{ route('company.profile') }}"><x-icon name="o-building-office" class="w-4 h-4" />
                                     Company Profile</a></li>
-                            <li><a href="{{ route('dashboard') }}"><x-icon name="o-home" class="w-4 h-4" /> Dashboard</a></li>
+
                         @elseif($admin)
                             <li><a href="{{ route('admin.dashboard') }}"><x-icon name="o-shield-check" class="w-4 h-4" /> Admin
                                     Panel</a></li>
                         @else
-                            <li><a href="{{ route('dashboard') }}"><x-icon name="o-home" class="w-4 h-4" /> Dashboard</a></li>
                             <li><a href="{{ route('profile') }}"><x-icon name="o-user" class="w-4 h-4" /> My Profile</a></li>
                         @endif
 

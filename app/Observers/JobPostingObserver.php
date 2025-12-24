@@ -13,14 +13,14 @@ class JobPostingObserver
      */
     public function creating(JobPosting $jobPosting): bool
     {
-        $employer = User::find($jobPosting->employer_id);
+        $company = \App\Models\Company::find($jobPosting->company_id);
 
-        if (!$employer) {
-            throw new \Exception('Employer not found.');
+        if (!$company) {
+            throw new \Exception('Company not found.');
         }
 
-        if (!$employer->isEmployer()) {
-            throw new \Exception('Only users with the employer role can create job postings.');
+        if ($company->status !== 'active') {
+            throw new \Exception('Your company account is not active. Please contact administration.');
         }
 
         return true;

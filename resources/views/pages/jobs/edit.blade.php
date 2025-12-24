@@ -1,4 +1,4 @@
-<x-layouts.main title="Post a New Job">
+<x-layouts.main title="Edit Job Listing">
     <div class="bg-base-200 min-h-screen">
         <div class="bg-base-100 border-b border-base-300">
             <div class="max-w-7xl mx-auto px-4 md:px-6 py-8">
@@ -10,10 +10,10 @@
                     </a>
                     <div class="max-w-5xl">
                         <h1 class="text-3xl md:text-4xl font-bold mb-3">
-                            Post a New Job
+                            Edit Job Listing
                         </h1>
                         <p class="text-base-content/70 text-base md:text-lg">
-                            Connect with high-potential students from the University of Moratuwa.
+                            Keep your job posting up to date to attract the best talent.
                         </p>
                     </div>
                 </div>
@@ -21,7 +21,7 @@
         </div>
 
         <div class="container mx-auto max-w-4xl px-4 py-12 pb-20">
-            @livewire('jobs.create-form')
+            @livewire('jobs.edit-form', ['job' => $job])
         </div>
     </div>
 </x-layouts.main>
