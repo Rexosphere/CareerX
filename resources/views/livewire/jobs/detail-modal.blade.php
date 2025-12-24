@@ -5,41 +5,42 @@ new class extends Component {
     public ?int $jobId = null;
     public bool $showModal = false;
 
-    public function mount(?int $jobId = null): void
+    #[Livewire\Attributes\On('open-job-modal')]
+    public function openModal(int $jobId): void
     {
         $this->jobId = $jobId;
-        $this->showModal = $jobId !== null;
+        $this->showModal = true;
     }
 
     public function with(): array
     {
-        // Mock job details - replace with actual database query
+        if (!$this->jobId) {
+            return ['job' => null];
+        }
+
+        $job = \App\Models\JobPosting::with('company')->find($this->jobId);
+
+        if (!$job) {
+            return ['job' => null];
+        }
+
         $jobDetails = [
-            'id' => 1,
-            'title' => 'Senior Software Engineer',
-            'company' => 'Tech Corp Solutions',
-            'companyWebsite' => 'https://techcorp.example.com',
-            'logo' => 'https://lh3.googleusercontent.com/aida-public/AB6AXuAN0qOGsCJULb6CQSl22BUQ1bg43BBj3g9UAbOAPk5dQfexCaNaIg9egRx4e0FvMKW5WDctlqP87baVY_yZv6wOhdeoQh4YmMJPlOY2w312opDiCax9nnaxGqbyN78UHolFmC05V-QxV_XnK8ak7Ta0QtZs0XEH4Gm-3-5wEWcZSmz42fvLTcM1N4RDtFxYRuOjUNi4FPWYbV2KQUKfOK3-CVrj0w2IubplqNiexLRAKEh-H59XPH95zmyCFdm8Cy77KHVrLJprD6M',
-            'location' => 'Colombo 03, Sri Lanka',
-            'salary' => 'LKR 250k - 350k / month',
-            'postedDays' => 2,
-            'type' => 'Full-Time',
-            'workMode' => 'On-site',
-            'preferredDept' => 'CSE Dept Alumni Preferred',
-            'deadline' => 'October 25, 2023',
-            'about' => 'We are looking for a skilled Senior Software Engineer to join our dynamic team in Colombo. As a key member of the engineering department, you will be responsible for developing high-quality applications that scale. We value innovation, clean code, and a passion for mentoring junior developers, especially those from the University of Moratuwa ecosystem.',
-            'responsibilities' => [
-                'Design, build, and maintain efficient, reusable, and reliable code using React and Node.js.',
-                'Collaborate with cross-functional teams to define, design, and ship new features.',
-                'Mentor junior engineers and conduct code reviews to ensure best practices.',
-                'Identify bottlenecks and bugs, and devise solutions to these problems.',
-            ],
-            'requirements' => [
-                'BSc in Computer Science & Engineering (University of Moratuwa preferred).',
-                '5+ years of experience in full-stack development.',
-                'Strong proficiency in JavaScript, TypeScript, and modern front-end frameworks.',
-                'Excellent problem-solving skills and attention to detail.',
-            ],
+            'id' => $job->id,
+            'title' => $job->title,
+            'company' => $job->company_name,
+            'companyWebsite' => '#', // Can add to company profile later
+            'logo' => $job->company_logo ?? 'https://ui-avatars.com/api/?name=' . urlencode($job->company_name),
+            'location' => $job->location,
+            'salary' => $job->salary_range ?? 'Negotiable',
+            'postedDays' => (int) $job->created_at->diffInDays(),
+            'type' => $job->type,
+            'workMode' => 'On-site', // Default for now
+            'preferredDept' => $job->category,
+            'deadline' => $job->application_deadline instanceof \Carbon\Carbon ? $job->application_deadline->format('M d, Y') : 'No deadline',
+            'about' => $job->description,
+            'prerequisites' => $job->prerequisites,
+            'responsibilities' => [], // Can be extracted from description if structured
+            'requirements' => is_array($job->requirements) ? $job->requirements : [],
         ];
 
         return [
@@ -52,6 +53,8 @@ new class extends Component {
         $this->showModal = false;
         $this->jobId = null;
     }
+
+    // ... rest of the methods
 
     public function saveJob(): void
     {
@@ -144,7 +147,8 @@ new class extends Component {
         <div class="modal modal-open">
             <div class="modal-box max-w-3xl max-h-[90vh] p-0 overflow-hidden">
                 <!-- Sticky Header -->
-                <div class="sticky top-0 z-10 flex items-center justify-between border-b border-base-300 px-6 py-4 bg-base-100/95 backdrop-blur">
+                <div
+                    class="sticky top-0 z-10 flex items-center justify-between border-b border-base-300 px-6 py-4 bg-base-100/95 backdrop-blur">
                     <h2 class="text-xl font-bold pr-4 truncate">
                         {{ $job['title'] }}
                     </h2>
@@ -159,8 +163,10 @@ new class extends Component {
                     <div class="flex flex-col gap-6 md:flex-row md:items-start mb-8">
                         <!-- Logo -->
                         <div class="shrink-0">
-                            <div class="w-20 h-20 overflow-hidden rounded-xl border border-base-300 bg-base-100 shadow-sm flex items-center justify-center">
-                                <img src="{{ $job['logo'] }}" alt="{{ $job['company'] }} Logo" class="w-full h-full object-cover" />
+                            <div
+                                class="w-20 h-20 overflow-hidden rounded-xl border border-base-300 bg-base-100 shadow-sm flex items-center justify-center">
+                                <img src="{{ $job['logo'] }}" alt="{{ $job['company'] }} Logo"
+                                    class="w-full h-full object-cover" />
                             </div>
                         </div>
 
@@ -168,7 +174,8 @@ new class extends Component {
                         <div class="flex flex-col flex-1 gap-2">
                             <div>
                                 <h3 class="text-2xl font-bold">{{ $job['company'] }}</h3>
-                                <a href="{{ $job['companyWebsite'] }}" target="_blank" class="link link-primary text-sm font-medium">
+                                <a href="{{ $job['companyWebsite'] }}" target="_blank"
+                                    class="link link-primary text-sm font-medium">
                                     Visit Website <x-icon name="o-arrow-top-right-on-square" class="w-4 h-4" />
                                 </a>
                             </div>
@@ -213,58 +220,81 @@ new class extends Component {
                                 <x-icon name="o-information-circle" class="text-primary w-6 h-6" />
                                 About the Role
                             </h4>
-                            <p class="leading-relaxed">{{ $job['about'] }}</p>
+                            <p class="leading-relaxed whitespace-pre-line">{{ $job['about'] }}</p>
                         </div>
+
+                        <!-- Prerequisites -->
+                        @if(!empty($job['prerequisites']))
+                            <div>
+                                <h4 class="text-lg font-bold mb-3 flex items-center gap-2 text-base-content">
+                                    <x-icon name="o-exclamation-circle" class="text-primary w-6 h-6" />
+                                    Prerequisites
+                                </h4>
+                                <p class="leading-relaxed whitespace-pre-line">{{ $job['prerequisites'] }}</p>
+                            </div>
+                        @endif
 
                         <!-- Responsibilities -->
-                        <div>
-                            <h4 class="text-lg font-bold mb-3 flex items-center gap-2 text-base-content">
-                                <x-icon name="o-clipboard-document-check" class="text-primary w-6 h-6" />
-                                Key Responsibilities
-                            </h4>
-                            <ul class="space-y-3 pl-1">
-                                @foreach($job['responsibilities'] as $responsibility)
-                                    <li class="flex items-start gap-3">
-                                        <x-icon name="o-check-circle" class="text-primary w-5 h-5 mt-0.5" />
-                                        <span class="leading-relaxed">{{ $responsibility }}</span>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        </div>
+                        @if(!empty($job['responsibilities']))
+                            <div>
+                                <h4 class="text-lg font-bold mb-3 flex items-center gap-2 text-base-content">
+                                    <x-icon name="o-clipboard-document-check" class="text-primary w-6 h-6" />
+                                    Key Responsibilities
+                                </h4>
+                                <ul class="space-y-3 pl-1">
+                                    @foreach($job['responsibilities'] as $responsibility)
+                                        <li class="flex items-start gap-3">
+                                            <x-icon name="o-check-circle" class="text-primary w-5 h-5 mt-0.5" />
+                                            <span class="leading-relaxed">{{ $responsibility }}</span>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
 
                         <!-- Requirements -->
-                        <div>
-                            <h4 class="text-lg font-bold mb-3 flex items-center gap-2 text-base-content">
-                                <x-icon name="o-shield-check" class="text-primary w-6 h-6" />
-                                Requirements
-                            </h4>
-                            <ul class="space-y-3 pl-1">
-                                @foreach($job['requirements'] as $requirement)
-                                    <li class="flex items-start gap-3">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-base-content/40 mt-2.5 shrink-0"></span>
-                                        <span class="leading-relaxed">{{ $requirement }}</span>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        </div>
+                        @if(!empty($job['requirements']))
+                            <div>
+                                <h4 class="text-lg font-bold mb-3 flex items-center gap-2 text-base-content">
+                                    <x-icon name="o-shield-check" class="text-primary w-6 h-6" />
+                                    Requirements
+                                </h4>
+                                <ul class="space-y-3 pl-1">
+                                    @foreach($job['requirements'] as $requirement)
+                                        <li class="flex items-start gap-3">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-base-content/40 mt-2.5 shrink-0"></span>
+                                            <span class="leading-relaxed">{{ $requirement }}</span>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
                     </div>
                 </div>
 
                 <!-- Sticky Footer -->
-                <div class="sticky bottom-0 z-10 border-t border-base-300 bg-base-200 p-4 sm:px-8 sm:py-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div
+                    class="sticky bottom-0 z-10 border-t border-base-300 bg-base-200 p-4 sm:px-8 sm:py-5 flex flex-col sm:flex-row items-center justify-between gap-4">
                     <div class="hidden sm:flex flex-col">
                         <span class="text-sm text-base-content/70">Application deadline:</span>
                         <span class="text-sm font-semibold">{{ $job['deadline'] }}</span>
                     </div>
                     <div class="flex w-full sm:w-auto gap-3">
-                        <button wire:click="saveJob" class="btn btn-outline gap-2 flex-1 sm:flex-none">
-                            <x-icon name="o-bookmark" class="w-5 h-5" />
-                            Save
-                        </button>
-                        <button wire:click="applyNow" class="btn btn-primary gap-2 flex-1 sm:flex-none shadow-sm">
-                            Apply Now
-                            <x-icon name="o-arrow-right" class="w-5 h-5" />
-                        </button>
+                        @if(auth('web')->user()?->isStudent())
+                            <button wire:click="saveJob" class="btn btn-outline gap-2 flex-1 sm:flex-none">
+                                <x-icon name="o-bookmark" class="w-5 h-5" />
+                                Save
+                            </button>
+                            <button wire:click="applyNow" class="btn btn-primary gap-2 flex-1 sm:flex-none shadow-sm">
+                                Apply Now
+                                <x-icon name="o-arrow-right" class="w-5 h-5" />
+                            </button>
+                        @elseif(!auth('web')->check() && !auth('company')->check() && !auth('admin')->check())
+                            <div class="flex flex-col sm:flex-row items-center gap-3">
+                                <p class="text-xs text-base-content/60 italic">Login as a student to apply</p>
+                                <a href="{{ route('login') }}" class="btn btn-primary btn-sm px-8">Login</a>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>

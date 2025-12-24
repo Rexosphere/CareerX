@@ -27,7 +27,7 @@ new class extends Component {
                     'workMode' => 'Hybrid', // You can add this field to DB later
                     'location' => $job->location,
                     'salary' => $job->salary_range ?? 'Negotiable',
-                    'postedDays' => $job->created_at->diffInDays(),
+                    'postedDays' => (int) $job->created_at->diffInDays(),
                 ];
             })
             ->toArray();
@@ -61,7 +61,8 @@ new class extends Component {
             <div class="card-body p-4">
                 <div class="flex items-center justify-between mb-3">
                     <h3 class="text-sm font-bold">Search</h3>
-                    <button wire:click="clearFilters" class="text-xs text-primary font-medium hover:underline">Clear</button>
+                    <button wire:click="clearFilters"
+                        class="text-xs text-primary font-medium hover:underline">Clear</button>
                 </div>
                 <label class="input input-bordered flex items-center gap-2">
                     <x-icon name="o-magnifying-glass" class="w-5 h-5 text-base-content/60" />
@@ -79,17 +80,20 @@ new class extends Component {
                 <div class="collapse-content">
                     <div class="space-y-3">
                         <label class="label cursor-pointer justify-start gap-3 py-1">
-                            <input wire:model.live="jobTypes" type="checkbox" value="Full Time" class="checkbox checkbox-sm checkbox-primary" />
+                            <input wire:model.live="jobTypes" type="checkbox" value="Full Time"
+                                class="checkbox checkbox-sm checkbox-primary" />
                             <span class="label-text">Full Time</span>
                             <span class="ml-auto text-xs text-base-content/40">24</span>
                         </label>
                         <label class="label cursor-pointer justify-start gap-3 py-1">
-                            <input wire:model.live="jobTypes" type="checkbox" value="Internship" class="checkbox checkbox-sm checkbox-primary" />
+                            <input wire:model.live="jobTypes" type="checkbox" value="Internship"
+                                class="checkbox checkbox-sm checkbox-primary" />
                             <span class="label-text">Internship</span>
                             <span class="ml-auto text-xs text-base-content/40">12</span>
                         </label>
                         <label class="label cursor-pointer justify-start gap-3 py-1">
-                            <input wire:model.live="jobTypes" type="checkbox" value="Part Time" class="checkbox checkbox-sm checkbox-primary" />
+                            <input wire:model.live="jobTypes" type="checkbox" value="Part Time"
+                                class="checkbox checkbox-sm checkbox-primary" />
                             <span class="label-text">Part Time</span>
                             <span class="ml-auto text-xs text-base-content/40">6</span>
                         </label>
@@ -106,8 +110,10 @@ new class extends Component {
                         <span>LKR 0</span>
                         <span>LKR 500k+</span>
                     </div>
-                    <input wire:model.live="salaryMin" type="range" min="0" max="100" class="range range-primary range-sm" />
-                    <div class="mt-3 text-sm font-medium text-primary text-center bg-primary/5 rounded py-1 border border-primary/10">
+                    <input wire:model.live="salaryMin" type="range" min="0" max="100"
+                        class="range range-primary range-sm" />
+                    <div
+                        class="mt-3 text-sm font-medium text-primary text-center bg-primary/5 rounded py-1 border border-primary/10">
                         > LKR {{ number_format($salaryMin * 1200) }} / mo
                     </div>
                 </div>
@@ -120,15 +126,18 @@ new class extends Component {
                 <div class="collapse-content">
                     <div class="space-y-3">
                         <label class="label cursor-pointer justify-start gap-3 py-1">
-                            <input wire:model.live="industries" type="checkbox" value="Software Engineering" class="checkbox checkbox-sm checkbox-primary" />
+                            <input wire:model.live="industries" type="checkbox" value="Software Engineering"
+                                class="checkbox checkbox-sm checkbox-primary" />
                             <span class="label-text">Software Engineering</span>
                         </label>
                         <label class="label cursor-pointer justify-start gap-3 py-1">
-                            <input wire:model.live="industries" type="checkbox" value="Data Science" class="checkbox checkbox-sm checkbox-primary" />
+                            <input wire:model.live="industries" type="checkbox" value="Data Science"
+                                class="checkbox checkbox-sm checkbox-primary" />
                             <span class="label-text">Data Science</span>
                         </label>
                         <label class="label cursor-pointer justify-start gap-3 py-1">
-                            <input wire:model.live="industries" type="checkbox" value="Design" class="checkbox checkbox-sm checkbox-primary" />
+                            <input wire:model.live="industries" type="checkbox" value="Design"
+                                class="checkbox checkbox-sm checkbox-primary" />
                             <span class="label-text">Design</span>
                         </label>
                     </div>
@@ -162,24 +171,31 @@ new class extends Component {
         <div class="mb-6">
             <label class="input input-bordered flex items-center gap-2 shadow-sm">
                 <x-icon name="o-magnifying-glass" class="w-5 h-5 text-base-content/60" />
-                <input wire:model.live="search" type="text" class="grow" placeholder="Search by job title, company, or keywords..." />
+                <input wire:model.live="search" type="text" class="grow"
+                    placeholder="Search by job title, company, or keywords..." />
             </label>
         </div>
 
         <!-- Job Cards Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
             @forelse($jobs as $job)
-                <div wire:key="job-{{ $job['id'] }}" class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 cursor-pointer">
+                <div wire:key="job-{{ $job['id'] }}"
+                    class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 cursor-pointer">
                     <div class="card-body p-5">
                         <!-- Header -->
                         <div class="flex items-start justify-between mb-4">
                             <div class="flex gap-4">
-                                <div class="w-12 h-12 rounded-lg bg-base-200 border border-base-300 flex items-center justify-center overflow-hidden flex-shrink-0">
-                                    <img src="{{ $job['logo'] }}" alt="{{ $job['company'] }} Logo" class="w-full h-full object-cover" />
+                                <div
+                                    class="w-12 h-12 rounded-lg bg-base-200 border border-base-300 flex items-center justify-center overflow-hidden flex-shrink-0">
+                                    <img src="{{ $job['logo'] }}" alt="{{ $job['company'] }} Logo"
+                                        class="w-full h-full object-cover" />
                                 </div>
                                 <div>
-                                    <h3 class="text-lg font-bold hover:text-primary transition-colors">{{ $job['title'] }}</h3>
-                                    <p class="text-sm font-medium text-base-content/70">{{ $job['company'] }} • {{ $job['industry'] }}</p>
+                                    <h3 class="text-lg font-bold hover:text-primary transition-colors">{{ $job['title'] }}
+                                    </h3>
+                                    <p class="text-sm font-medium text-base-content/70">{{ $job['company'] }} •
+                                        {{ $job['industry'] }}
+                                    </p>
                                 </div>
                             </div>
                             <button class="text-base-content/30 hover:text-error transition-colors">
@@ -205,13 +221,16 @@ new class extends Component {
                             </div>
                             <div class="flex items-center gap-2 text-sm text-base-content/70">
                                 <x-icon name="o-clock" class="w-[18px] h-[18px]" />
-                                <span>Posted {{ isset($job['postedHours']) ? $job['postedHours'] . ' hours' : $job['postedDays'] . ' days' }} ago</span>
+                                <span>Posted
+                                    {{ isset($job['postedHours']) ? $job['postedHours'] . ' hours' : $job['postedDays'] . ' days' }}
+                                    ago</span>
                             </div>
                         </div>
 
                         <!-- Actions -->
                         <div class="card-actions pt-4 border-t border-base-300">
-                            <button wire:click="showJobDetails({{ $job['id'] }})" class="btn btn-primary btn-outline btn-block btn-sm">
+                            <button wire:click="showJobDetails({{ $job['id'] }})"
+                                class="btn btn-primary btn-outline btn-block btn-sm">
                                 Apply Now
                             </button>
                         </div>
@@ -220,13 +239,15 @@ new class extends Component {
             @empty
                 <!-- Empty State -->
                 <div class="col-span-full">
-                    <div class="max-w-md mx-auto flex flex-col items-center p-8 bg-base-100 rounded-xl border border-base-300 shadow-sm text-center">
+                    <div
+                        class="max-w-md mx-auto flex flex-col items-center p-8 bg-base-100 rounded-xl border border-base-300 shadow-sm text-center">
                         <div class="w-48 h-32 mb-6 bg-primary/10 rounded-full flex items-center justify-center">
                             <x-icon name="o-magnifying-glass-minus" class="text-primary/40 w-16 h-16" />
                         </div>
                         <h3 class="text-lg font-bold mb-2">No jobs found</h3>
                         <p class="text-base-content/70 text-sm mb-6">
-                            We couldn't find any jobs matching your current filters. Try adjusting your search keywords or clearing some filters.
+                            We couldn't find any jobs matching your current filters. Try adjusting your search keywords or
+                            clearing some filters.
                         </p>
                         <button wire:click="clearFilters" class="btn btn-primary btn-sm">
                             Clear All Filters
@@ -246,4 +267,6 @@ new class extends Component {
             </div>
         @endif
     </div>
+
+    <livewire:jobs.detail-modal />
 </div>

@@ -12,11 +12,12 @@ class JobPosting extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'employer_id',
+        'company_id',
         'title',
         'company_name',
         'company_logo',
         'description',
+        'prerequisites',
         'location',
         'type',
         'category',
@@ -33,11 +34,11 @@ class JobPosting extends Model
     ];
 
     /**
-     * Get the employer who posted this job
+     * Get the company who posted this job
      */
-    public function employer(): BelongsTo
+    public function company(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'employer_id');
+        return $this->belongsTo(Company::class);
     }
 
     /**
@@ -64,7 +65,7 @@ class JobPosting extends Model
         return $query->active()
             ->where(function ($q) {
                 $q->whereNull('application_deadline')
-                  ->orWhere('application_deadline', '>=', now());
+                    ->orWhere('application_deadline', '>=', now());
             });
     }
 
@@ -93,24 +94,23 @@ class JobPosting extends Model
     }
 
     /**
-     * Check if the current user can edit this job posting
+     * Check if the current user (company) can edit this job posting
      */
-    public function canEdit(?User $user = null): bool
+    public function canEdit($user = null): bool
     {
-        $user = $user ?? auth()->user();
+        $user = $user ?? auth('company')->user();
 
         if (!$user) {
             return false;
         }
 
-        // Only the employer who created the job can edit it
-        return $user->id === $this->employer_id && $user->isEmployer();
+        return $user->id === $this->company_id;
     }
 
     /**
      * Check if the current user can delete this job posting
      */
-    public function canDelete(?User $user = null): bool
+    public function canDelete($user = null): bool
     {
         return $this->canEdit($user);
     }

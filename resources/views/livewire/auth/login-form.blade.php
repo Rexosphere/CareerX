@@ -18,7 +18,7 @@ new class extends Component {
 
         if (auth()->attempt(['email' => $this->email, 'password' => $this->password], $this->remember)) {
             session()->regenerate();
-            $this->redirectRoute('dashboard');
+            $this->redirectRoute('profile');
         } else {
             $this->addError('email', 'Invalid credentials.');
         }
