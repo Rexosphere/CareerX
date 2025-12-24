@@ -90,6 +90,12 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(SavedJob::class);
     }
 
+    // Research Projects (for students)
+    public function researchProjects()
+    {
+        return $this->hasMany(ResearchProject::class);
+    }
+
     // RBAC Relationships and Methods
     public function roles()
     {
