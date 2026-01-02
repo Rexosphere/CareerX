@@ -152,11 +152,9 @@
                         @endif
                         <div class="divider my-1"></div>
                         <li>
-                            <form method="POST" action="{{ route('logout') }}" id="logout-form-mobile">
+                            <form method="POST" action="{{ route('logout') }}">
                                 @csrf
-                                <a href="#"
-                                    onclick="event.preventDefault(); document.getElementById('logout-form-mobile').submit();"
-                                    class="text-error">Logout</a>
+                                <button type="submit" class="text-error w-full text-left">Logout</button>
                             </form>
                         </li>
                     @else
@@ -218,20 +216,19 @@
                                     Panel</a></li>
                         @else
                             <li><a href="{{ route('profile') }}"><x-icon name="o-user" class="w-4 h-4" /> My Profile</a></li>
-                            <li><a href="{{ route('academia') }}"><x-icon name="o-academic-cap" class="w-4 h-4" /> Research & Academia</a></li>
+                            <li><a href="{{ route('academia') }}"><x-icon name="o-academic-cap" class="w-4 h-4" /> Research &
+                                    Academia</a></li>
                         @endif
 
                         <div class="divider my-1"></div>
 
                         <li>
-                            <form method="POST" action="{{ route('logout') }}" id="logout-form-desktop">
+                            <form method="POST" action="{{ route('logout') }}">
                                 @csrf
-                                <a href="#"
-                                    onclick="event.preventDefault(); document.getElementById('logout-form-desktop').submit();"
-                                    class="text-error flex items-center gap-2">
+                                <button type="submit" class="text-error flex items-center gap-2 w-full text-left">
                                     <x-icon name="o-arrow-right-on-rectangle" class="w-4 h-4" />
                                     Logout
-                                </a>
+                                </button>
                             </form>
                         </li>
                     </ul>

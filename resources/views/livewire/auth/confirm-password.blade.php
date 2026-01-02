@@ -4,7 +4,8 @@
             <div class="card-body">
                 <!-- Header -->
                 <div class="text-center mb-6">
-                    <div class="w-12 h-12 bg-warning/10 rounded-full flex items-center justify-center text-warning mx-auto mb-4">
+                    <div
+                        class="w-12 h-12 bg-warning/10 rounded-full flex items-center justify-center text-warning mx-auto mb-4">
                         <x-icon name="o-lock-closed" class="w-6 h-6" />
                     </div>
                     <h2 class="card-title text-3xl font-bold justify-center">
@@ -28,16 +29,8 @@
                     @csrf
 
                     <!-- Password -->
-                    <x-input
-                        label="Password"
-                        name="password"
-                        type="password"
-                        icon="o-lock-closed"
-                        placeholder="••••••••"
-                        autofocus
-                        autocomplete="current-password"
-                        required
-                    />
+                    <x-input label="Password" name="password" type="password" icon="o-lock-closed"
+                        placeholder="••••••••" autofocus autocomplete="current-password" required />
 
                     @error('password')
                         <p class="text-error text-sm mt-1">{{ $message }}</p>
@@ -45,17 +38,13 @@
 
                     <!-- Submit Button -->
                     <div class="mt-6">
-                        <x-button
-                            label="Confirm"
-                            class="btn-primary w-full"
-                            type="submit"
-                        />
+                        <x-button label="Confirm" class="btn-primary w-full" type="submit" />
                     </div>
                 </form>
 
                 <!-- Footer -->
                 <div class="text-center mt-6 text-xs text-base-content/60">
-                    <a href="{{ route('dashboard') }}" class="link link-hover">Cancel</a>
+                    <a href="{{ route('home') }}" class="link link-hover">Cancel</a>
                 </div>
             </div>
         </div>

@@ -27,10 +27,13 @@ new class extends Component {
         ]);
 
         // Assign student role by default
-        $studentRole = \App\Models\Role::where('name', 'student')->first();
-        if ($studentRole) {
-            $user->roles()->attach($studentRole);
-        }
+        // Assign student role by default
+        $studentRole = \App\Models\Role::firstOrCreate(
+            ['name' => 'student'],
+            ['display_name' => 'Student']
+        );
+
+        $user->roles()->attach($studentRole);
 
         auth()->login($user);
         $this->redirectRoute('onboarding');

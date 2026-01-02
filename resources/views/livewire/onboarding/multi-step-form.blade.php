@@ -113,7 +113,7 @@ new class extends Component {
 
         session()->flash('message', 'Profile setup completed successfully!');
 
-        $this->redirect(route('dashboard'));
+        $this->redirect(route('home'));
     }
 
     public function getProgressPercentage(): int

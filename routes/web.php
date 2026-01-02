@@ -88,9 +88,8 @@ Route::middleware(['auth:company'])->group(function () {
     Route::get('/applicants', [ApplicantController::class, 'index'])->name('applicants.index');
 
     // Reuse dashboard for company for now if needed, or redirect
-    Route::get('/company/dashboard', function () {
-        return view('pages.dashboard.index'); // Generic dashboard
-    })->name('company.dashboard');
+    // Reuse dashboard for company for now if needed, or redirect
+    Route::get('/company/dashboard', \App\Livewire\Company\Dashboard::class)->name('company.dashboard');
 });
 
 // Student (Web) Routes

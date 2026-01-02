@@ -91,14 +91,10 @@ new class extends Component {
 
     public function applyNow(): void
     {
-        if (!auth()->check()) {
-            session()->flash('error', 'Please login to apply for jobs.');
+        // Check if user is logged in as a student
+        if (!auth('web')->check() || !auth('web')->user()->isStudent()) {
+            session()->flash('error', 'Please login as a student to apply.');
             $this->redirectRoute('login');
-            return;
-        }
-
-        if (!auth()->user()->isStudent()) {
-            session()->flash('error', 'Only students can apply for jobs.');
             return;
         }
 
@@ -285,16 +281,12 @@ new class extends Component {
                                 <x-icon name="o-bookmark" class="w-5 h-5" />
                                 Save
                             </button>
-                            <button wire:click="applyNow" class="btn btn-primary gap-2 flex-1 sm:flex-none shadow-sm">
-                                Apply Now
-                                <x-icon name="o-arrow-right" class="w-5 h-5" />
-                            </button>
-                        @elseif(!auth('web')->check() && !auth('company')->check() && !auth('admin')->check())
-                            <div class="flex flex-col sm:flex-row items-center gap-3">
-                                <p class="text-xs text-base-content/60 italic">Login as a student to apply</p>
-                                <a href="{{ route('login') }}" class="btn btn-primary btn-sm px-8">Login</a>
-                            </div>
                         @endif
+                        
+                        <button wire:click="applyNow" class="btn btn-primary gap-2 flex-1 sm:flex-none shadow-sm">
+                            Apply Now
+                            <x-icon name="o-arrow-right" class="w-5 h-5" />
+                        </button>
                     </div>
                 </div>
             </div>

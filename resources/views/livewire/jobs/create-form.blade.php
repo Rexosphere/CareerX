@@ -45,7 +45,7 @@ new class extends Component {
         ]);
 
         session()->flash('message', 'Job posting created successfully!');
-        $this->redirectRoute('company.profile', navigate: true);
+        $this->redirectRoute('company.dashboard', navigate: true);
     }
 }; ?>
 
@@ -132,7 +132,7 @@ new class extends Component {
 
             {{-- Action Buttons --}}
             <div class="pt-8 border-t border-base-200 flex flex-col sm:flex-row justify-end gap-3">
-                <a href="{{ route('company.profile') }}" class="btn btn-ghost px-8">
+                <a href="{{ route('company.dashboard') }}" class="btn btn-ghost px-8">
                     Discard Changes
                 </a>
                 <x-button label="Publish Job Listing" type="submit"

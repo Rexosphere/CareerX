@@ -3,10 +3,10 @@
         <div class="bg-base-100 border-b border-base-300">
             <div class="max-w-7xl mx-auto px-4 md:px-6 py-8">
                 <div class="flex flex-col gap-4">
-                    <a href="{{ route('company.profile') }}"
+                    <a href="{{ route('company.dashboard') }}"
                         class="inline-flex items-center text-sm font-bold text-primary hover:translate-x-[-4px] transition-transform">
                         <x-icon name="o-arrow-left" class="w-4 h-4 mr-2" />
-                        Return to Profile
+                        Return to Dashboard
                     </a>
                     <div class="max-w-5xl">
                         <h1 class="text-3xl md:text-4xl font-bold mb-3">

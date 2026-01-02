@@ -27,6 +27,9 @@ class Dashboard extends Component
     public $course_category;
     public $course_content;
 
+    // Student Filter Properties
+    public $studentSearch = '';
+
     public function mount()
     {
         $this->refreshStats();
@@ -94,12 +97,27 @@ class Dashboard extends Component
         $this->refreshStats();
     }
 
+    const COURSE_CATEGORIES = [
+        'Cv creating sessions',
+        'Interview facing sessions',
+        'Industrial careers sessions',
+        'Academia careers sessions'
+    ];
+
     public function addCourse()
     {
         $this->validate([
             'course_title' => 'required|min:3',
             'course_category' => 'required',
-            'course_content' => 'required|min:10',
+            'course_content' => [
+                'required',
+                'url',
+                function ($attribute, $value, $fail) {
+                    if (!preg_match('/^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/', $value)) {
+                        $fail('The ' . $attribute . ' must be a valid YouTube URL.');
+                    }
+                }
+            ],
         ]);
 
         Course::create([
@@ -120,6 +138,14 @@ class Dashboard extends Component
         session()->flash('message', 'Course deleted successfully.');
     }
 
+    public function deleteStudent($studentId)
+    {
+        $student = User::findOrFail($studentId);
+        $student->delete();
+        $this->refreshStats();
+        session()->flash('message', "Student '{$student->name}' has been deleted.");
+    }
+
     public function render()
     {
         $pendingCompanies = Company::where('status', 'pending')
@@ -136,6 +162,10 @@ class Dashboard extends Component
         $students = User::whereHas('roles', function ($q) {
             $q->where('name', 'student');
         })
+            ->where(function ($query) {
+                $query->where('name', 'like', '%' . $this->studentSearch . '%')
+                    ->orWhere('email', 'like', '%' . $this->studentSearch . '%');
+            })
             ->latest()
             ->paginate(10, pageName: 'students-page');
 

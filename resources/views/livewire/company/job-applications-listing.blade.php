@@ -1,137 +1,73 @@
-<?php
+<div class="bg-base-100 border border-base-200 shadow-sm rounded-xl overflow-hidden">
+    <div class="p-6 border-b border-base-200 bg-base-50/50">
+        <h3 class="font-bold text-lg flex items-center gap-2">
+            <x-icon name="o-users" class="w-5 h-5 text-primary" />
+            Received Applications
+        </h3>
+    </div>
 
-use Livewire\Volt\Component;
-use App\Models\JobPosting;
-use App\Models\Application;
-use Illuminate\Support\Facades\Storage;
-
-new class extends Component {
-    public int $jobId;
-
-    public function with(): array
-    {
-        $job = JobPosting::with(['applications.student.studentProfile'])->findOrFail($this->jobId);
-
-        return [
-            'job' => $job,
-            'applications' => $job->applications()->latest()->get()
-        ];
-    }
-
-    public function downloadCv(int $applicationId)
-    {
-        $application = Application::findOrFail($applicationId);
-
-        if (!$application->cv_path) {
-            $this->dispatch('toast', type: 'error', message: 'No CV uploaded for this application.', title: 'Error');
-            return;
-        }
-
-        // Check if file exists
-        if (!Storage::exists($application->cv_path)) {
-            $this->dispatch('toast', type: 'error', message: 'CV file not found on server.', title: 'Error');
-            return;
-        }
-
-        return Storage::download($application->cv_path);
-    }
-
-    public function updateStatus(int $applicationId, string $status)
-    {
-        $application = Application::findOrFail($applicationId);
-        $application->update(['status' => $status]);
-
-        $this->dispatch('toast', type: 'success', message: "Application marked as $status.", title: 'Status Updated');
-    }
-}; ?>
-
-<div class="space-y-6">
-    @forelse($applications as $application)
-        @php
-            $student = $application->student;
-            $profile = $student->studentProfile;
-        @endphp
-        <div class="card bg-base-100 shadow-xl border border-base-200 overflow-hidden group">
-            <div class="card-body p-6 md:p-8">
-                <div class="flex flex-col md:flex-row gap-6 justify-between">
-                    {{-- Student Info --}}
-                    <div class="flex gap-6">
-                        <div class="avatar placeholder">
-                            <div class="bg-primary text-primary-content rounded-2xl w-24 h-24 text-2xl font-black">
-                                <span>{{ $student->initials() }}</span>
-                            </div>
-                        </div>
-
-                        <div class="space-y-2">
-                            <h3 class="text-2xl font-bold text-base-content">{{ $student->name }}</h3>
-                            <div class="flex flex-wrap gap-x-4 gap-y-2 text-sm text-base-content/60 font-medium">
-                                <div class="flex items-center gap-1.5">
-                                    <x-icon name="o-envelope" class="w-4 h-4" />
-                                    {{ $student->email }}
+    @if($applications->count() > 0)
+        <div class="overflow-x-auto">
+            <table class="table table-zebra w-full">
+                <thead class="bg-base-200/50 text-base-content/70 uppercase text-xs font-bold">
+                    <tr>
+                        <th class="pl-6 py-4">Applicant</th>
+                        <th class="py-4">Applied Date</th>
+                        <th class="py-4">Status</th>
+                        <th class="text-right pr-6 py-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="text-base divide-y divide-base-200">
+                    @foreach($applications as $application)
+                        <tr class="hover:bg-base-200/50 transition-colors">
+                            <td class="pl-6 py-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="avatar placeholder">
+                                        <div class="bg-neutral text-neutral-content rounded-full w-10">
+                                            <span class="text-xs">{{ substr($application->student->name, 0, 2) }}</span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="font-bold">{{ $application->student->name }}</div>
+                                        <div class="text-xs opacity-60">{{ $application->student->email }}</div>
+                                    </div>
                                 </div>
-                                <div class="flex items-center gap-1.5">
-                                    <x-icon name="o-academic-cap" class="w-4 h-4" />
-                                    {{ $profile->course ?? 'Not Specified' }}
-                                </div>
-                                <div class="flex items-center gap-1.5 text-primary bg-primary/10 px-2 py-0.5 rounded-md">
-                                    <x-icon name="o-briefcase" class="w-4 h-4" />
-                                    {{ $application->status }}
-                                </div>
-                            </div>
-
-                            <p class="text-base-content/70 mt-4 line-clamp-2 max-w-2xl text-lg italic">
-                                "{{ $application->cover_letter ?? 'No cover letter provided.' }}"
-                            </p>
-                        </div>
-                    </div>
-
-                    {{-- Actions --}}
-                    <div class="flex flex-row md:flex-col gap-3 justify-center items-stretch md:w-56 shrink-0">
-                        @if($application->cv_path)
-                            <button wire:click="downloadCv({{ $application->id }})"
-                                class="btn btn-primary shadow-lg shadow-primary/20">
-                                <x-icon name="o-arrow-down-tray" class="w-4 h-4" />
-                                Download CV
-                            </button>
-                        @else
-                            <button class="btn btn-disabled" disabled>
-                                No CV Provided
-                            </button>
-                        @endif
-
-                        <div class="dropdown dropdown-end w-full">
-                            <div tabindex="0" role="button" class="btn btn-outline border-base-300 w-full">Update Status
-                            </div>
-                            <ul tabindex="0"
-                                class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52 border border-base-300">
-                                <li><a wire:click="updateStatus({{ $application->id }}, 'reviewed')">Mark as Reviewed</a>
-                                </li>
-                                <li><a wire:click="updateStatus({{ $application->id }}, 'shortlisted')"
-                                        class="text-success font-bold">Shortlist</a></li>
-                                <li><a wire:click="updateStatus({{ $application->id }}, 'rejected')"
-                                        class="text-error font-bold">Reject</a></li>
-                                <li><a wire:click="updateStatus({{ $application->id }}, 'accepted')"
-                                        class="text-primary font-bold">Accept</a></li>
-                            </ul>
-                        </div>
-
-                        <a href="{{ route('students.profile', $student->id) }}"
-                            class="btn btn-ghost btn-sm text-primary hover:bg-primary/5">
-                            View Full Profile
-                        </a>
-                    </div>
-                </div>
-            </div>
+                            </td>
+                            <td class="py-4">
+                                <div class="text-sm opacity-70">{{ $application->created_at->format('M d, Y') }}</div>
+                                <div class="text-xs opacity-50">{{ $application->created_at->diffForHumans() }}</div>
+                            </td>
+                            <td class="py-4">
+                                <span class="badge badge-sm badge-outline">{{ ucfirst($application->status) }}</span>
+                            </td>
+                            <td class="text-right pr-6 py-4">
+                                @if($application->cv_path)
+                                    <a href="{{ Storage::url($application->cv_path) }}" target="_blank"
+                                        class="btn btn-sm btn-outline btn-primary">
+                                        View CV
+                                    </a>
+                                @else
+                                    <span class="text-xs opacity-50 italic">No CV uploaded</span>
+                                @endif
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
-    @empty
-        <div class="card bg-base-100 shadow-xl border border-base-200 border-dashed py-24 text-center">
-            <div
-                class="w-20 h-20 bg-base-200 rounded-full flex items-center justify-center mx-auto mb-6 text-base-content/20">
-                <x-icon name="o-user-group" class="w-12 h-12" />
+
+        @if($applications->hasPages())
+            <div class="p-4 border-t border-base-200 bg-base-50/50">
+                {{ $applications->links() }}
             </div>
-            <h3 class="text-2xl font-bold mb-2">No applications yet</h3>
-            <p class="text-base-content/60 mb-8 max-w-sm mx-auto">Wait for students to discover your job listing and apply.
-            </p>
+        @endif
+    @else
+        <div class="text-center py-16 bg-base-50/50">
+            <div class="w-16 h-16 bg-base-200 rounded-full flex items-center justify-center mx-auto mb-4">
+                <x-icon name="o-inbox" class="w-8 h-8 text-base-content/30" />
+            </div>
+            <h3 class="font-bold text-lg mb-1">No Applications Yet</h3>
+            <p class="text-base-content/60">Wait for candidates to apply for this position.</p>
         </div>
-    @endforelse
+    @endif
 </div>

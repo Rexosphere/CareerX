@@ -49,8 +49,28 @@
                 Course Overview
             </h2>
 
+            @php
+                // Extract YouTube ID
+                preg_match('/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/', $course->content, $matches);
+                $videoId = $matches[1] ?? null;
+            @endphp
+
             <div class="text-base-content/80 whitespace-pre-line">
-                {!! $course->content !!}
+                @if($videoId)
+                    <div
+                        class="relative w-full overflow-hidden rounded-2xl shadow-lg aspect-video mb-8 border border-base-300">
+                        <iframe src="https://www.youtube.com/embed/{{ $videoId }}" title="{{ $course->title }}"
+                            class="absolute top-0 left-0 w-full h-full" frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                @else
+                    <div class="alert alert-warning mb-6">
+                        <x-icon name="o-exclamation-triangle" class="w-6 h-6" />
+                        <span>Video content unavailable. URL: {{ $course->content }}</span>
+                    </div>
+                @endif
             </div>
 
             {{-- Curriculum section --}}

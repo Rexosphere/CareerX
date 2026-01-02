@@ -294,29 +294,31 @@
                                                 </label>
                                                 <select wire:model="course_category"
                                                     class="select select-bordered w-full bg-base-50/30 focus:bg-base-100 focus:border-primary transition-all duration-300">
-                                                    <option value="">Select Category</option>
-                                                    <option value="Career Advice">Career Advice</option>
-                                                    <option value="Technical Skills">Technical Skills</option>
-                                                    <option value="Soft Skills">Soft Skills</option>
-                                                    <option value="Industrial Knowledge">Industrial Knowledge</option>
+                                                    @foreach(\App\Livewire\Admin\Dashboard::COURSE_CATEGORIES as $category)
+                                                        <option value="{{ $category }}">{{ $category }}</option>
+                                                    @endforeach
                                                 </select>
                                                 @error('course_category')
                                                     <span class="text-error text-xs mt-1 font-medium">{{ $message }}</span>
                                                 @enderror
                                             </div>
 
-                                            {{-- Course Content --}}
+                                            {{-- Course Content (YouTube URL) --}}
                                             <div class="form-control items-start w-full">
                                                 <label class="label mb-2">
                                                     <span
                                                         class="label-text font-bold text-base-content/80 flex items-center gap-2">
-                                                        <x-icon name="o-document-text" class="w-4 h-4 text-primary" />
-                                                        Full Course Content
+                                                        <x-icon name="o-video-camera" class="w-4 h-4 text-primary" />
+                                                        YouTube Video URL
                                                     </span>
                                                 </label>
-                                                <textarea wire:model="course_content"
-                                                    class="textarea textarea-bordered w-full h-80 bg-base-50/30 transition-all duration-300 leading-relaxed text-base"
-                                                    placeholder="Enter the comprehensive educational materials for this course..."></textarea>
+                                                <input type="url" wire:model="course_content"
+                                                    class="input input-bordered w-full bg-base-50/30 transition-all duration-300"
+                                                    placeholder="https://www.youtube.com/watch?v=..." />
+                                                <label class="label">
+                                                    <span class="label-text-alt text-base-content/60">Paste the full YouTube
+                                                        video URL here.</span>
+                                                </label>
                                                 @error('course_content')
                                                     <span class="text-error text-xs mt-1 font-medium">{{ $message }}</span>
                                                 @enderror
@@ -495,12 +497,23 @@
                 @endif
             @elseif($activeTab === 'students')
                 {{-- Students Management Section --}}
-                <div class="p-6 border-b border-base-200 bg-base-100">
-                    <h3 class="font-bold text-lg flex items-center gap-2">
-                        <x-icon name="o-user-group" class="w-5 h-5 text-primary" />
-                        Manage Students
-                    </h3>
-                    <p class="text-sm text-base-content/60 mt-1">View and monitor registered students on the platform.</p>
+                <div
+                    class="p-6 border-b border-base-200 bg-base-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h3 class="font-bold text-lg flex items-center gap-2">
+                            <x-icon name="o-user-group" class="w-5 h-5 text-primary" />
+                            Manage Students
+                        </h3>
+                        <p class="text-sm text-base-content/60 mt-1">View and monitor registered students on the platform.
+                        </p>
+                    </div>
+                    <div class="form-control w-full sm:w-auto">
+                        <div class="input-group">
+                            <input type="text" wire:model.live.debounce.300ms="studentSearch"
+                                placeholder="Search by name or email..."
+                                class="input input-bordered input-sm w-full sm:w-64" />
+                        </div>
+                    </div>
                 </div>
 
                 @if ($students->count() > 0)
@@ -511,7 +524,8 @@
                                     <th class="pl-6">Student Info</th>
                                     <th>Email</th>
                                     <th>Registered</th>
-                                    <th class="text-right pr-6">Status</th>
+                                    <th>Status</th>
+                                    <th class="text-right pr-6">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -537,8 +551,15 @@
                                             <div class="text-sm opacity-70">{{ $student->created_at->format('M d, Y') }}
                                             </div>
                                         </td>
-                                        <td class="text-right pr-6">
+                                        <td>
                                             <div class="badge badge-success badge-sm">Active</div>
+                                        </td>
+                                        <td class="text-right pr-6">
+                                            <button wire:click="deleteStudent({{ $student->id }})"
+                                                wire:confirm="Are you sure you want to delete this student account? This action cannot be undone."
+                                                class="btn btn-error btn-ghost btn-sm text-error/70 hover:text-error hover:bg-error/10 p-1">
+                                                <x-icon name="o-trash" class="w-4 h-4" />
+                                            </button>
                                         </td>
                                     </tr>
                                 @endforeach

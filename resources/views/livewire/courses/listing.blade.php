@@ -113,7 +113,9 @@ new class extends Component {
                             <h3 class="card-title text-xl font-bold line-clamp-2 leading-tight min-h-[3.5rem]">{{ $course->title }}</h3>
                             
                             <p class="text-sm text-base-content/60 line-clamp-3 mt-2 flex-grow">
-                                {{ Str::limit(strip_tags($course->content), 120) }}
+                                <span class="bg-base-200 text-base-content/70 px-2 py-1 rounded-md text-xs font-semibold uppercase tracking-wider">
+                                    Video Course
+                                </span>
                             </p>
 
                             <div class="flex items-center justify-end w-full mt-6">
