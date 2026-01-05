@@ -187,8 +187,17 @@
                 <div class="dropdown dropdown-end">
                     <div tabindex="0" role="button"
                         class="btn btn-ghost btn-circle avatar border border-base-300 focus:outline-none">
-                        <div class="w-10 rounded-full bg-base-300 flex items-center justify-center">
-                            @if($anyUser->name)
+                        <div class="w-10 rounded-full bg-base-300 flex items-center justify-center overflow-hidden">
+                            @php
+                                $profilePhoto = null;
+                                if ($user && $user->studentProfile && $user->studentProfile->profile_photo_path) {
+                                    $profilePhoto = Storage::url($user->studentProfile->profile_photo_path);
+                                }
+                            @endphp
+
+                            @if($profilePhoto)
+                                <img src="{{ $profilePhoto }}" alt="{{ $anyUser->name }}" class="w-full h-full object-cover" />
+                            @elseif($anyUser->name)
                                 <span
                                     class="font-semibold text-base-content/70">{{ strtoupper(substr($anyUser->name, 0, 1)) }}</span>
                             @else

@@ -63,6 +63,19 @@ new class extends Component {
         $this->skills = array_values($this->skills);
     }
 
+    public function deletePhoto(): void
+    {
+        if ($this->profile->profile_photo_path) {
+            // Delete the file from storage
+            \Storage::disk('public')->delete($this->profile->profile_photo_path);
+            
+            // Update the profile
+            $this->profile->update(['profile_photo_path' => null]);
+            
+            session()->flash('message', 'Profile photo deleted successfully.');
+        }
+    }
+
     public function deleteCV(): void
     {
         if ($this->profile->cv_path) {
@@ -87,6 +100,11 @@ new class extends Component {
 
         $photoPath = $this->profile->profile_photo_path;
         if ($this->photo) {
+            // Delete old photo if exists
+            if ($photoPath) {
+                \Storage::disk('public')->delete($photoPath);
+            }
+            // Store new photo
             $photoPath = $this->photo->store('profile-photos', 'public');
         }
 
@@ -108,7 +126,8 @@ new class extends Component {
             'cv_path' => $cvPath,
         ]);
 
-        // Reset the file input
+        // Reset the file inputs
+        $this->photo = null;
         $this->cv_file = null;
 
         session()->flash('message', 'Profile updated successfully.');
@@ -132,19 +151,50 @@ new class extends Component {
                         @endif
                     </div>
                 </div>
-                <!-- Photo Upload Trigger -->
-                <label class="absolute bottom-0 right-0 btn btn-circle btn-xs btn-primary cursor-pointer shadow-lg"
-                    for="photo-upload">
-                    <x-icon name="o-camera" class="w-3 h-3" />
-                </label>
+                
+                <!-- Photo Actions -->
+                <div class="absolute bottom-0 right-0 flex gap-1">
+                    <!-- Upload/Change Photo Button -->
+                    <label class="btn btn-circle btn-xs btn-primary cursor-pointer shadow-lg tooltip tooltip-top"
+                        data-tip="{{ $profile->profile_photo_path ? 'Change photo' : 'Upload photo' }}"
+                        for="photo-upload">
+                        <x-icon name="o-camera" class="w-3 h-3" />
+                    </label>
+                    
+                    <!-- Delete Photo Button - Only show if photo exists and no new photo selected -->
+                    @if($profile->profile_photo_path && !$photo)
+                        <button wire:click="deletePhoto" 
+                                wire:confirm="Are you sure you want to delete your profile photo?"
+                                class="btn btn-circle btn-xs btn-error shadow-lg tooltip tooltip-top"
+                                data-tip="Delete photo">
+                            <x-icon name="o-trash" class="w-3 h-3" />
+                        </button>
+                    @endif
+                </div>
+                
                 <input type="file" id="photo-upload" wire:model="photo" class="hidden" accept="image/*" />
             </div>
 
-            <div>
+            <div class="flex-1">
                 <h2 class="card-title text-2xl">{{ $name }}</h2>
                 <p class="text-base-content/60">{{ $email }}</p>
                 @if($profile->student_id)
                     <div class="badge badge-outline mt-2">{{ $profile->student_id }}</div>
+                @endif
+                
+                <!-- New Photo Preview Alert -->
+                @if($photo)
+                    <div class="alert alert-success mt-3">
+                        <x-icon name="o-photo" class="w-5 h-5" />
+                        <div class="flex-1">
+                            <p class="text-sm font-medium">New photo selected</p>
+                            <p class="text-xs opacity-70">Click Save Changes below to update</p>
+                        </div>
+                        <button wire:click="$set('photo', null)" type="button" 
+                                class="btn btn-ghost btn-sm btn-circle">
+                            <x-icon name="o-x-mark" class="w-4 h-4" />
+                        </button>
+                    </div>
                 @endif
             </div>
         </div>
