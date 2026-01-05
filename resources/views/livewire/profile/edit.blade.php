@@ -26,6 +26,9 @@ new class extends Component {
     #[Validate('nullable|image|max:1024')] // 1MB Max
     public $photo;
 
+    #[Validate('nullable|file|mimes:pdf|max:5120')] // 5MB Max PDF
+    public $cv_file;
+
     public array $skills = [];
     public string $newSkill = '';
 
@@ -60,6 +63,19 @@ new class extends Component {
         $this->skills = array_values($this->skills);
     }
 
+    public function deleteCV(): void
+    {
+        if ($this->profile->cv_path) {
+            // Delete the file from storage
+            \Storage::disk('public')->delete($this->profile->cv_path);
+
+            // Update the profile
+            $this->profile->update(['cv_path' => null]);
+
+            session()->flash('message', 'CV deleted successfully.');
+        }
+    }
+
     public function save(): void
     {
         $this->validate();
@@ -74,12 +90,26 @@ new class extends Component {
             $photoPath = $this->photo->store('profile-photos', 'public');
         }
 
+        $cvPath = $this->profile->cv_path;
+        if ($this->cv_file) {
+            // Delete old CV if exists
+            if ($cvPath) {
+                \Storage::disk('public')->delete($cvPath);
+            }
+            // Store new CV
+            $cvPath = $this->cv_file->store('cvs', 'public');
+        }
+
         $this->profile->update([
             'phone' => $this->phone,
             'bio' => $this->bio,
             'skills' => $this->skills,
             'profile_photo_path' => $photoPath,
+            'cv_path' => $cvPath,
         ]);
+
+        // Reset the file input
+        $this->cv_file = null;
 
         session()->flash('message', 'Profile updated successfully.');
     }
@@ -192,6 +222,83 @@ new class extends Component {
                     @endif
                 </div>
             </div>
+
+            <!-- CV Upload Section -->
+            <div class="card bg-base-100 shadow-xl">
+                <div class="card-body">
+                    <h3 class="card-title text-lg mb-4">Resume / CV</h3>
+
+                    <!-- Existing CV Display - Only show when CV exists and no new file selected -->
+                    @if($profile->cv_path && !$cv_file)
+                        <div class="alert alert-info">
+                            <x-icon name="o-document-text" class="w-6 h-6" />
+                            <div class="flex-1">
+                                <p class="font-medium">Current CV</p>
+                                <p class="text-xs opacity-70">Your CV is uploaded and ready</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <a href="{{ Storage::url($profile->cv_path) }}" target="_blank"
+                                    class="btn btn-sm btn-ghost gap-2">
+                                    <x-icon name="o-eye" class="w-4 h-4" />
+                                    View
+                                </a>
+                                <button wire:click="deleteCV" wire:confirm="Are you sure you want to delete your CV?"
+                                    class="btn btn-sm btn-ghost text-error gap-2">
+                                    <x-icon name="o-trash" class="w-4 h-4" />
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    @endif
+
+                    <!-- CV File Upload - Only show when no CV exists OR when user wants to replace -->
+                    @if(!$profile->cv_path || $cv_file)
+                        <div class="w-full">
+                            <x-file wire:model="cv_file" accept="application/pdf" hint="Max file size: 5MB. PDF only."
+                                class="w-full text-center">
+                                <div class="flex flex-col w-full h-full items-center justify-center py-8">
+                                    <div class="mb-3 rounded-full bg-primary/10 p-3 mx-auto">
+                                        <x-icon name="o-cloud-arrow-up" class="w-8 h-8 text-primary" />
+                                    </div>
+                                    <div class="text-center w-full">
+                                        <p class="text-sm font-medium">
+                                            <span class="text-primary font-bold hover:underline cursor-pointer">
+                                                Click to browse
+                                            </span>
+                                            <span class="opacity-70">or drag CV here</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </x-file>
+
+                            <!-- New CV Preview -->
+                            @if ($cv_file)
+                                <div class="mt-4 alert alert-success">
+                                    <x-icon name="o-document-duplicate" class="w-5 h-5" />
+                                    <div class="flex-1">
+                                        <p class="font-medium">{{ $cv_file->getClientOriginalName() }}</p>
+                                        <p class="text-xs opacity-70">
+                                            {{ number_format($cv_file->getSize() / 1024 / 1024, 1) }} MB
+                                            @if($profile->cv_path)
+                                                - Will replace existing CV when saved
+                                            @endif
+                                        </p>
+                                    </div>
+                                    <button wire:click="$set('cv_file', null)" type="button"
+                                        class="btn btn-ghost btn-sm btn-circle">
+                                        <x-icon name="o-x-mark" class="w-4 h-4" />
+                                    </button>
+                                </div>
+
+                                <!-- Save Button for CV -->
+                                <div class="flex justify-end pt-2 mt-2 border-t border-base-300">
+                                    <x-button label="Save CV" class="btn-primary" wire:click="save" spinner="save" />
+                                </div>
+                            @endif
+                        </div>
+                    @endif
+                </div>
+            </div>
         </div>
 
         <!-- Sidebar / Tips -->
@@ -206,6 +313,7 @@ new class extends Component {
                         <li>Keep your contact details up to date so recruiters can reach you.</li>
                         <li>Add specific technical and soft skills to stand out.</li>
                         <li>A professional profile picture increases visibility.</li>
+                        <li>Upload your latest CV to make it easy for employers to review your qualifications.</li>
                     </ul>
                 </div>
             </div>
