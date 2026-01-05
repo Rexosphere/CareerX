@@ -255,17 +255,17 @@ new class extends Component {
                     @if(!$profile->cv_path || $cv_file)
                         <div class="w-full">
                             <x-file wire:model="cv_file" accept="application/pdf" hint="Max file size: 5MB. PDF only."
-                                class="w-full text-center">
-                                <div class="flex flex-col w-full h-full items-center justify-center py-8">
-                                    <div class="mb-3 rounded-full bg-primary/10 p-3 mx-auto">
-                                        <x-icon name="o-cloud-arrow-up" class="w-8 h-8 text-primary" />
+                                class="w-full flex items-center justify-center">
+                                <div class="flex flex-col items-center justify-center py-12 w-full">
+                                    <div class="mb-4 rounded-full bg-primary/10 p-4">
+                                        <x-icon name="o-cloud-arrow-up" class="w-10 h-10 text-primary" />
                                     </div>
-                                    <div class="text-center w-full">
+                                    <div class="text-center">
                                         <p class="text-sm font-medium">
                                             <span class="text-primary font-bold hover:underline cursor-pointer">
                                                 Click to browse
                                             </span>
-                                            <span class="opacity-70">or drag CV here</span>
+                                            <span class="opacity-70"> or drag CV here</span>
                                         </p>
                                     </div>
                                 </div>
