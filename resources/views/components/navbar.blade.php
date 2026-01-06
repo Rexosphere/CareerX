@@ -192,6 +192,8 @@
                                 $profilePhoto = null;
                                 if ($user && $user->studentProfile && $user->studentProfile->profile_photo_path) {
                                     $profilePhoto = Storage::url($user->studentProfile->profile_photo_path);
+                                } elseif ($company && $company->logo_path) {
+                                    $profilePhoto = asset('storage/' . $company->logo_path);
                                 }
                             @endphp
 

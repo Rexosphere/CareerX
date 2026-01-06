@@ -24,12 +24,22 @@ new class extends Component {
             return ['job' => null];
         }
 
+        // Use current company logo from profile if available, otherwise fall back to stored logo or avatar
+        $logo = null;
+        if ($job->company && $job->company->logo_path) {
+            $logo = asset('storage/' . $job->company->logo_path);
+        } elseif ($job->company_logo) {
+            $logo = $job->company_logo;
+        } else {
+            $logo = 'https://ui-avatars.com/api/?name=' . urlencode($job->company_name);
+        }
+
         $jobDetails = [
             'id' => $job->id,
             'title' => $job->title,
             'company' => $job->company_name,
             'companyWebsite' => '#', // Can add to company profile later
-            'logo' => $job->company_logo ?? 'https://ui-avatars.com/api/?name=' . urlencode($job->company_name),
+            'logo' => $logo,
             'location' => $job->location,
             'salary' => $job->salary_range ?? 'Negotiable',
             'postedDays' => (int) $job->created_at->diffInDays(),
@@ -282,7 +292,7 @@ new class extends Component {
                                 Save
                             </button>
                         @endif
-                        
+
                         <button wire:click="applyNow" class="btn btn-primary gap-2 flex-1 sm:flex-none shadow-sm">
                             Apply Now
                             <x-icon name="o-arrow-right" class="w-5 h-5" />

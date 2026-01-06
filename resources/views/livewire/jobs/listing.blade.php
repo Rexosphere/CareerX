@@ -11,18 +11,29 @@ new class extends Component {
 
     public function with(): array
     {
-        // Query active job postings from database
+        // Query active job postings from database with company relationship
         $jobs = \App\Models\JobPosting::query()
+            ->with('company')
             ->where('is_active', true)
             ->latest()
             ->get()
             ->map(function ($job) {
+                // Use current company logo from profile if available, otherwise fall back to stored logo or avatar
+                $logo = null;
+                if ($job->company && $job->company->logo_path) {
+                    $logo = asset('storage/' . $job->company->logo_path);
+                } elseif ($job->company_logo) {
+                    $logo = $job->company_logo;
+                } else {
+                    $logo = 'https://ui-avatars.com/api/?name=' . urlencode($job->company_name);
+                }
+
                 return [
                     'id' => $job->id,
                     'title' => $job->title,
                     'company' => $job->company_name,
                     'industry' => $job->category,
-                    'logo' => $job->company_logo ?? 'https://ui-avatars.com/api/?name=' . urlencode($job->company_name),
+                    'logo' => $logo,
                     'type' => $job->type,
                     'workMode' => 'Hybrid', // You can add this field to DB later
                     'location' => $job->location,
