@@ -1,95 +1,106 @@
 <?php
 use Livewire\Volt\Component;
+use Livewire\Attributes\Url;
+use App\Models\StudentProfile;
+use Illuminate\Support\Facades\Storage;
 
 new class extends Component {
+    #[Url(as: 'q')]
+    public string $searchSkills = '';
+
     public array $selectedDepartments = [];
     public array $selectedAvailability = [];
     public int $minExperience = 0;
     public int $maxExperience = 4;
-    public string $searchSkills = '';
 
     public function with(): array
     {
-        // Mock data for demonstration
-        $students = [
-            [
-                'id' => 1,
-                'name' => 'Saman Perera',
-                'department' => 'Computer Science',
-                'year' => 3,
-                'gpa' => 3.8,
-                'avatar' => 'https://ui-avatars.com/api/?name=Saman+Perera&background=0d9ef2&color=fff',
-                'skills' => ['React', 'Node.js', 'Figma'],
-                'available' => true
-            ],
-            [
-                'id' => 2,
-                'name' => 'Nethmi Silva',
-                'department' => 'Civil Engineering',
-                'year' => 4,
-                'gpa' => 3.9,
-                'avatar' => 'https://ui-avatars.com/api/?name=Nethmi+Silva&background=0d9ef2&color=fff',
-                'skills' => ['AutoCAD', 'Revit', 'Project Mgmt'],
-                'available' => true
-            ],
-            [
-                'id' => 3,
-                'name' => 'Kavindu Dias',
-                'department' => 'Electrical Engineering',
-                'year' => 3,
-                'gpa' => 3.5,
-                'avatar' => 'https://ui-avatars.com/api/?name=Kavindu+Dias&background=0d9ef2&color=fff',
-                'skills' => ['Matlab', 'Python', 'Circuits'],
-                'available' => false
-            ],
-            [
-                'id' => 4,
-                'name' => 'Amara Fernando',
-                'department' => 'Mechanical Engineering',
-                'year' => 2,
-                'gpa' => 3.7,
-                'avatar' => 'https://ui-avatars.com/api/?name=Amara+Fernando&background=0d9ef2&color=fff',
-                'skills' => ['SolidWorks', 'Thermodynamics'],
-                'available' => true
-            ],
-            [
-                'id' => 5,
-                'name' => 'Tharindu Raj',
-                'department' => 'IT & Management',
-                'year' => 4,
-                'gpa' => 3.4,
-                'avatar' => null,
-                'initials' => 'TR',
-                'skills' => ['SQL', 'Business Analysis', 'Agile'],
-                'available' => false
-            ],
-            [
-                'id' => 6,
-                'name' => 'Dilani Perera',
-                'department' => 'Architecture',
-                'year' => 5,
-                'gpa' => 3.9,
-                'avatar' => 'https://ui-avatars.com/api/?name=Dilani+Perera&background=0d9ef2&color=fff',
-                'skills' => ['3D Max', 'SketchUp', 'Rendering'],
-                'available' => true
-            ],
-        ];
+        // Build query from database
+        $query = StudentProfile::query()
+            ->with('user')
+            ->whereHas('user'); // Only profiles with associated users
 
-        return [
-            'students' => $students,
-            'totalStudents' => 1240,
-            'departments' => [
+        // Search filter - search in user name and skills
+        if (!empty($this->searchSkills)) {
+            $searchTerm = '%' . $this->searchSkills . '%';
+            $query->where(function ($q) use ($searchTerm) {
+                $q->whereHas('user', function ($userQuery) use ($searchTerm) {
+                    $userQuery->where('name', 'like', $searchTerm);
+                })
+                    ->orWhere('skills', 'like', $searchTerm)
+                    ->orWhere('bio', 'like', $searchTerm)
+                    ->orWhere('course', 'like', $searchTerm);
+            });
+        }
+
+        // Department/Course filter
+        if (!empty($this->selectedDepartments)) {
+            $query->whereIn('course', $this->selectedDepartments);
+        }
+
+        // Experience/Year filter
+        if ($this->maxExperience < 4) {
+            $query->where('year', '<=', $this->maxExperience + 1);
+        }
+
+        // Availability filter
+        if (!empty($this->selectedAvailability)) {
+            if (in_array('Available', $this->selectedAvailability)) {
+                $query->where('available_for_hire', true);
+            }
+        }
+
+        // Get students and format data
+        $students = $query->latest()->get()->map(function ($profile) {
+            $skills = is_array($profile->skills) ? $profile->skills : [];
+            $avatarUrl = null;
+
+            if ($profile->profile_photo_path) {
+                $avatarUrl = Storage::url($profile->profile_photo_path);
+            } else {
+                $avatarUrl = 'https://ui-avatars.com/api/?name=' . urlencode($profile->user->name ?? 'Student') . '&background=0d9ef2&color=fff';
+            }
+
+            return [
+                'id' => $profile->user_id,
+                'name' => $profile->user->name ?? 'Unknown',
+                'department' => $profile->course ?? 'Not specified',
+                'year' => $profile->year ?? 1,
+                'gpa' => $profile->gpa ?? 0.0,
+                'avatar' => $avatarUrl,
+                'skills' => array_slice($skills, 0, 3), // Show max 3 skills
+                'available' => $profile->available_for_hire ?? false,
+            ];
+        })->toArray();
+
+        // Get unique departments/courses from database
+        $departments = StudentProfile::query()
+            ->whereNotNull('course')
+            ->distinct()
+            ->pluck('course')
+            ->filter()
+            ->values()
+            ->toArray();
+
+        // If no departments found, use default list
+        if (empty($departments)) {
+            $departments = [
                 'Computer Science',
                 'Civil Engineering',
                 'Electrical Engineering',
                 'Mechanical Engineering',
                 'IT & Management',
                 'Architecture'
-            ],
+            ];
+        }
+
+        return [
+            'students' => $students,
+            'totalStudents' => count($students),
+            'departments' => $departments,
             'availabilityOptions' => [
-                'Internship',
-                'Part-time',
-                'Full-time'
+                'Available',
+                'Not Available'
             ]
         ];
     }
@@ -110,14 +121,16 @@ new class extends Component {
         <aside class="w-full lg:w-1/4 min-w-[280px] flex flex-col gap-6">
             <div class="flex items-center justify-between">
                 <h3 class="font-bold text-lg">Filters</h3>
-                <button wire:click="clearFilters" class="text-sm text-primary font-medium hover:underline">Clear All</button>
+                <button wire:click="clearFilters" class="text-sm text-primary font-medium hover:underline">Clear
+                    All</button>
             </div>
 
             {{-- Search Input --}}
             <div class="form-control">
                 <label class="input input-bordered flex items-center gap-2 shadow-sm">
                     <x-icon name="o-magnifying-glass" class="text-base-content/60 w-5 h-5" />
-                    <input wire:model.live="searchSkills" type="text" class="grow" placeholder="Search skills (e.g. React)..." />
+                    <input wire:model.live="searchSkills" type="text" class="grow"
+                        placeholder="Search skills (e.g. React)..." />
                 </label>
             </div>
 
@@ -131,7 +144,8 @@ new class extends Component {
                     <div class="flex flex-col gap-2 pt-2 border-t border-dashed border-base-300">
                         @foreach($departments as $dept)
                             <label class="label cursor-pointer justify-start gap-3">
-                                <input wire:model.live="selectedDepartments" type="checkbox" value="{{ $dept }}" class="checkbox checkbox-primary checkbox-sm" />
+                                <input wire:model.live="selectedDepartments" type="checkbox" value="{{ $dept }}"
+                                    class="checkbox checkbox-primary checkbox-sm" />
                                 <span class="label-text">{{ $dept }}</span>
                             </label>
                         @endforeach
@@ -148,7 +162,8 @@ new class extends Component {
                 <div class="collapse-content">
                     <div class="pt-6 pb-4 border-t border-dashed border-base-300 px-2">
                         <div class="flex flex-col items-center gap-4">
-                            <input type="range" min="0" max="4" wire:model.live="maxExperience" class="range range-primary range-sm" />
+                            <input type="range" min="0" max="4" wire:model.live="maxExperience"
+                                class="range range-primary range-sm" />
                             <div class="flex justify-between w-full text-xs text-base-content/70 font-medium">
                                 <span>0 Years</span>
                                 <span>{{ $maxExperience }} Years</span>
@@ -168,7 +183,8 @@ new class extends Component {
                     <div class="flex flex-col gap-2 pt-2 border-t border-dashed border-base-300">
                         @foreach($availabilityOptions as $option)
                             <label class="label cursor-pointer justify-start gap-3">
-                                <input wire:model.live="selectedAvailability" type="checkbox" value="{{ $option }}" class="checkbox checkbox-primary checkbox-sm" />
+                                <input wire:model.live="selectedAvailability" type="checkbox" value="{{ $option }}"
+                                    class="checkbox checkbox-primary checkbox-sm" />
                                 <span class="label-text">{{ $option }}</span>
                             </label>
                         @endforeach
@@ -187,16 +203,19 @@ new class extends Component {
             {{-- Talent Grid --}}
             <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 @foreach($students as $student)
-                    <div class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300">
+                    <div
+                        class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300">
                         <div class="card-body items-center gap-4">
                             {{-- Avatar --}}
                             <div class="relative">
                                 <div class="avatar {{ $student['available'] ? 'online' : '' }} placeholder">
-                                    <div class="w-24 rounded-full {{ $student['avatar'] ? '' : 'bg-neutral text-neutral-content' }}">
+                                    <div
+                                        class="w-24 rounded-full {{ $student['avatar'] ? '' : 'bg-neutral text-neutral-content' }}">
                                         @if($student['avatar'])
                                             <img src="{{ $student['avatar'] }}" alt="{{ $student['name'] }}" />
                                         @else
-                                            <span class="text-2xl font-bold">{{ $student['initials'] ?? strtoupper(substr($student['name'], 0, 2)) }}</span>
+                                            <span
+                                                class="text-2xl font-bold">{{ $student['initials'] ?? strtoupper(substr($student['name'], 0, 2)) }}</span>
                                         @endif
                                     </div>
                                 </div>
@@ -206,7 +225,8 @@ new class extends Component {
                             <div class="text-center flex flex-col gap-1">
                                 <h3 class="card-title text-lg justify-center">{{ $student['name'] }}</h3>
                                 <p class="text-sm text-base-content/70 font-medium">{{ $student['department'] }}</p>
-                                <p class="text-xs text-base-content/60">Year {{ $student['year'] }} • {{ $student['gpa'] }} GPA</p>
+                                <p class="text-xs text-base-content/60">Year {{ $student['year'] }} • {{ $student['gpa'] }}
+                                    GPA</p>
                             </div>
 
                             {{-- Skills --}}
@@ -217,7 +237,8 @@ new class extends Component {
                             </div>
 
                             {{-- Action Button --}}
-                            <a href="{{ route('students.profile', $student['id']) }}" class="btn btn-primary btn-sm w-full mt-auto gap-2" wire:navigate>
+                            <a href="{{ route('students.profile', $student['id']) }}"
+                                class="btn btn-primary btn-sm w-full mt-auto gap-2" wire:navigate>
                                 <span>View Profile</span>
                                 <x-icon name="o-arrow-right" class="w-4 h-4" />
                             </a>

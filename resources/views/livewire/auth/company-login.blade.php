@@ -5,8 +5,8 @@ use Livewire\Attributes\Validate;
 use Illuminate\Validation\ValidationException;
 
 new class extends Component {
-    #[Validate('required')]
-    public string $company_id = '';
+    #[Validate('required|email')]
+    public string $email = '';
 
     #[Validate('required')]
     public string $password = '';
@@ -24,11 +24,11 @@ new class extends Component {
     {
         $this->validate();
 
-        if (auth('company')->attempt(['name' => $this->company_id, 'password' => $this->password], $this->remember)) {
+        if (auth('company')->attempt(['email' => $this->email, 'password' => $this->password], $this->remember)) {
             // Check status
             if (auth('company')->user()->status !== 'active') {
                 auth('company')->logout();
-                $this->addError('company_id', 'Your account is pending approval or has been rejected.');
+                $this->addError('email', 'Your account is pending approval or has been rejected.');
                 return;
             }
 
@@ -36,7 +36,7 @@ new class extends Component {
             $this->redirectRoute('company.dashboard', navigate: true);
         } else {
             throw ValidationException::withMessages([
-                'company_id' => 'The provided credentials do not match our records.',
+                'email' => 'The provided credentials do not match our records.',
             ]);
         }
     }
@@ -53,16 +53,16 @@ new class extends Component {
                 Company Portal
             </h2>
             <p class="text-base-content/60 text-sm">
-                Sign in with your Company ID to access recruitment tools
+                Sign in with your company email to access recruitment tools
             </p>
         </div>
 
         <!-- Form -->
         <form wire:submit="login" class="space-y-5">
-            <!-- Company ID -->
+            <!-- Email -->
             <div class="form-control">
-                <x-input label="Company Name" wire:model="company_id" icon="o-identification"
-                    placeholder="Enter your registered company name" type="text"
+                <x-input label="Company Email" wire:model="email" icon="o-envelope"
+                    placeholder="Enter your company email address" type="email"
                     class="input-bordered focus:border-primary focus:ring-primary" />
             </div>
 
