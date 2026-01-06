@@ -1,8 +1,17 @@
 <?php
 use Livewire\Volt\Component;
+use Livewire\Attributes\Url;
 
 new class extends Component {
+    #[Url(as: 'search')]
     public string $search = '';
+
+    #[Url(as: 'category')]
+    public string $category = '';
+
+    #[Url(as: 'location')]
+    public string $location = '';
+
     public string $sortBy = 'newest';
     public array $jobTypes = [];
     public int $salaryMin = 0;
@@ -11,12 +20,60 @@ new class extends Component {
 
     public function with(): array
     {
-        // Query active job postings from database with company relationship
-        $jobs = \App\Models\JobPosting::query()
+        // Build the query with filters
+        $query = \App\Models\JobPosting::query()
             ->with('company')
-            ->where('is_active', true)
-            ->latest()
-            ->get()
+            ->where('is_active', true);
+
+        // Search filter - search in title, company name, description, and location
+        if (!empty($this->search)) {
+            $searchTerm = '%' . $this->search . '%';
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('title', 'like', $searchTerm)
+                    ->orWhere('company_name', 'like', $searchTerm)
+                    ->orWhere('description', 'like', $searchTerm)
+                    ->orWhere('location', 'like', $searchTerm);
+            });
+        }
+
+        // Category filter (from homepage search bar)
+        if (!empty($this->category)) {
+            $query->where('category', 'like', '%' . $this->category . '%');
+        }
+
+        // Location filter (from homepage search bar)
+        if (!empty($this->location)) {
+            $query->where('location', 'like', '%' . $this->location . '%');
+        }
+
+        // Job type filter (checkboxes)
+        if (!empty($this->jobTypes)) {
+            $query->whereIn('type', $this->jobTypes);
+        }
+
+        // Industry filter (checkboxes)
+        if (!empty($this->industries)) {
+            $query->whereIn('category', $this->industries);
+        }
+
+        // Sorting
+        switch ($this->sortBy) {
+            case 'oldest':
+                $query->oldest();
+                break;
+            case 'salary-high':
+                $query->orderByRaw("CAST(REPLACE(REPLACE(salary_range, 'LKR', ''), ',', '') AS UNSIGNED) DESC");
+                break;
+            case 'salary-low':
+                $query->orderByRaw("CAST(REPLACE(REPLACE(salary_range, 'LKR', ''), ',', '') AS UNSIGNED) ASC");
+                break;
+            case 'newest':
+            default:
+                $query->latest();
+                break;
+        }
+
+        $jobs = $query->get()
             ->map(function ($job) {
                 // Use current company logo from profile if available, otherwise fall back to stored logo or avatar
                 $logo = null;
@@ -46,15 +103,39 @@ new class extends Component {
         return [
             'jobs' => $jobs,
             'jobCount' => count($jobs),
+            'jobTypeCounts' => $this->getJobTypeCounts(),
+            'availableCategories' => $this->getAvailableCategories(),
         ];
     }
 
     public function clearFilters(): void
     {
         $this->search = '';
+        $this->category = '';
+        $this->location = '';
         $this->jobTypes = [];
         $this->salaryMin = 0;
         $this->industries = [];
+    }
+
+    protected function getJobTypeCounts(): array
+    {
+        return \App\Models\JobPosting::query()
+            ->where('is_active', true)
+            ->selectRaw('type, COUNT(*) as count')
+            ->groupBy('type')
+            ->pluck('count', 'type')
+            ->toArray();
+    }
+
+    protected function getAvailableCategories(): array
+    {
+        return \App\Models\JobPosting::query()
+            ->where('is_active', true)
+            ->selectRaw('category, COUNT(*) as count')
+            ->groupBy('category')
+            ->pluck('count', 'category')
+            ->toArray();
     }
 
     public function showJobDetails(int $jobId): void
@@ -90,24 +171,19 @@ new class extends Component {
                 <div class="collapse-title text-sm font-bold">Job Type</div>
                 <div class="collapse-content">
                     <div class="space-y-3">
-                        <label class="label cursor-pointer justify-start gap-3 py-1">
-                            <input wire:model.live="jobTypes" type="checkbox" value="Full Time"
-                                class="checkbox checkbox-sm checkbox-primary" />
-                            <span class="label-text">Full Time</span>
-                            <span class="ml-auto text-xs text-base-content/40">24</span>
-                        </label>
-                        <label class="label cursor-pointer justify-start gap-3 py-1">
-                            <input wire:model.live="jobTypes" type="checkbox" value="Internship"
-                                class="checkbox checkbox-sm checkbox-primary" />
-                            <span class="label-text">Internship</span>
-                            <span class="ml-auto text-xs text-base-content/40">12</span>
-                        </label>
-                        <label class="label cursor-pointer justify-start gap-3 py-1">
-                            <input wire:model.live="jobTypes" type="checkbox" value="Part Time"
-                                class="checkbox checkbox-sm checkbox-primary" />
-                            <span class="label-text">Part Time</span>
-                            <span class="ml-auto text-xs text-base-content/40">6</span>
-                        </label>
+                        @php
+                            $jobTypeOptions = ['Full Time', 'Part Time', 'Internship', 'Contract', 'Remote'];
+                        @endphp
+                        @foreach($jobTypeOptions as $type)
+                            @if(isset($jobTypeCounts[$type]) || in_array($type, ['Full Time', 'Part Time', 'Internship']))
+                                <label class="label cursor-pointer justify-start gap-3 py-1">
+                                    <input wire:model.live="jobTypes" type="checkbox" value="{{ $type }}"
+                                        class="checkbox checkbox-sm checkbox-primary" />
+                                    <span class="label-text">{{ $type }}</span>
+                                    <span class="ml-auto text-xs text-base-content/40">{{ $jobTypeCounts[$type] ?? 0 }}</span>
+                                </label>
+                            @endif
+                        @endforeach
                     </div>
                 </div>
             </div>
@@ -130,27 +206,22 @@ new class extends Component {
                 </div>
             </div>
 
-            <!-- Industry -->
+            <!-- Industry / Category -->
             <div class="collapse collapse-arrow">
-                <input type="checkbox" />
-                <div class="collapse-title text-sm font-bold">Industry</div>
+                <input type="checkbox" checked />
+                <div class="collapse-title text-sm font-bold">Category</div>
                 <div class="collapse-content">
                     <div class="space-y-3">
-                        <label class="label cursor-pointer justify-start gap-3 py-1">
-                            <input wire:model.live="industries" type="checkbox" value="Software Engineering"
-                                class="checkbox checkbox-sm checkbox-primary" />
-                            <span class="label-text">Software Engineering</span>
-                        </label>
-                        <label class="label cursor-pointer justify-start gap-3 py-1">
-                            <input wire:model.live="industries" type="checkbox" value="Data Science"
-                                class="checkbox checkbox-sm checkbox-primary" />
-                            <span class="label-text">Data Science</span>
-                        </label>
-                        <label class="label cursor-pointer justify-start gap-3 py-1">
-                            <input wire:model.live="industries" type="checkbox" value="Design"
-                                class="checkbox checkbox-sm checkbox-primary" />
-                            <span class="label-text">Design</span>
-                        </label>
+                        @forelse($availableCategories as $categoryName => $count)
+                            <label class="label cursor-pointer justify-start gap-3 py-1">
+                                <input wire:model.live="industries" type="checkbox" value="{{ $categoryName }}"
+                                    class="checkbox checkbox-sm checkbox-primary" />
+                                <span class="label-text">{{ $categoryName }}</span>
+                                <span class="ml-auto text-xs text-base-content/40">{{ $count }}</span>
+                            </label>
+                        @empty
+                            <p class="text-xs text-base-content/50">No categories available</p>
+                        @endforelse
                     </div>
                 </div>
             </div>
