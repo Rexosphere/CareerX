@@ -15,9 +15,9 @@
 
             <!-- Links -->
             <div class="flex gap-8 text-sm text-base-content/70">
-                <a class="link link-hover hover:text-primary" href="#">Privacy Policy</a>
-                <a class="link link-hover hover:text-primary" href="#">Terms of Service</a>
-                <a class="link link-hover hover:text-primary" href="#">Contact Support</a>
+                <a class="link link-hover hover:text-primary" href="{{ route('resources.index') }}">Privacy Policy</a>
+                <a class="link link-hover hover:text-primary" href="{{ route('resources.index') }}">Terms of Service</a>
+                <a class="link link-hover hover:text-primary" href="mailto:support@careerx.lk">Contact Support</a>
             </div>
 
             <!-- Copyright -->

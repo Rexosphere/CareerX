@@ -4,64 +4,77 @@
             <h1 class="text-3xl font-bold">Applicants</h1>
             <div class="flex gap-2">
                 <!-- Search/Filter could go here -->
-                <button class="btn btn-ghost btn-sm">
-                    <x-icon name="o-funnel" class="w-5 h-5 mr-1" />
-                    Filter
-                </button>
+                <div class="dropdown dropdown-end">
+                    <button tabindex="0" class="btn btn-ghost btn-sm">
+                        <x-icon name="o-funnel" class="w-5 h-5 mr-1" />
+                        Filter
+                    </button>
+                    <div tabindex="0"
+                        class="dropdown-content z-[1] p-4 shadow-lg bg-base-100 rounded-box w-64 border border-base-300">
+                        <p class="text-sm text-base-content/70 text-center py-4">
+                            <x-icon name="o-sparkles" class="w-6 h-6 mx-auto mb-2 text-primary" />
+                            Advanced filters coming soon!
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
-        
+
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-             @forelse($applicants as $applicant)
-                 <div class="card bg-base-100 shadow-md border border-base-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                     <div class="card-body items-center text-center p-6">
-                         <div class="avatar placeholder mb-4">
-                             <div class="bg-primary/10 text-primary rounded-full w-24 ring ring-primary ring-offset-base-100 ring-offset-2">
-                                 <span class="text-3xl font-bold">{{ $applicant->initials() }}</span>
-                             </div>
-                         </div>
-                         <h2 class="card-title text-lg">{{ $applicant->name }}</h2>
-                         <p class="text-sm text-base-content/70 mb-4">{{ $applicant->email }}</p>
-                         
-                         @if($applicant->studentProfile)
-                             <div class="w-full bg-base-200/50 rounded-lg p-3 text-left text-sm space-y-2 mb-4">
-                                 @if($applicant->studentProfile->course)
+            @forelse($applicants as $applicant)
+                <div
+                    class="card bg-base-100 shadow-md border border-base-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                    <div class="card-body items-center text-center p-6">
+                        <div class="avatar placeholder mb-4">
+                            <div
+                                class="bg-primary/10 text-primary rounded-full w-24 ring ring-primary ring-offset-base-100 ring-offset-2">
+                                <span class="text-3xl font-bold">{{ $applicant->initials() }}</span>
+                            </div>
+                        </div>
+                        <h2 class="card-title text-lg">{{ $applicant->name }}</h2>
+                        <p class="text-sm text-base-content/70 mb-4">{{ $applicant->email }}</p>
+
+                        @if($applicant->studentProfile)
+                            <div class="w-full bg-base-200/50 rounded-lg p-3 text-left text-sm space-y-2 mb-4">
+                                @if($applicant->studentProfile->course)
                                     <div class="flex items-start gap-2">
                                         <x-icon name="o-academic-cap" class="w-4 h-4 mt-0.5 opacity-70" />
-                                        <span class="line-clamp-1" title="{{ $applicant->studentProfile->course }}">{{ $applicant->studentProfile->course }}</span>
+                                        <span class="line-clamp-1"
+                                            title="{{ $applicant->studentProfile->course }}">{{ $applicant->studentProfile->course }}</span>
                                     </div>
-                                 @endif
-                                 @if($applicant->studentProfile->year)
+                                @endif
+                                @if($applicant->studentProfile->year)
                                     <div class="flex items-start gap-2">
                                         <x-icon name="o-calendar" class="w-4 h-4 mt-0.5 opacity-70" />
                                         <span>Year {{ $applicant->studentProfile->year }}</span>
                                     </div>
-                                 @endif
-                             </div>
-                         @else
+                                @endif
+                            </div>
+                        @else
                             <div class="w-full py-4 text-center text-xs text-base-content/50 italic mb-4">
                                 No profile details available
                             </div>
-                         @endif
+                        @endif
 
-                         <div class="card-actions justify-center w-full mt-auto">
-                             <a href="{{ route('students.profile', $applicant->id) }}" class="btn btn-outline btn-primary btn-sm w-full">View Profile</a>
-                         </div>
-                     </div>
-                 </div>
-             @empty
-                 <div class="col-span-full flex flex-col items-center justify-center py-16 text-center">
-                     <div class="w-16 h-16 bg-base-200 rounded-full flex items-center justify-center mb-4">
-                         <x-icon name="o-users" class="w-8 h-8 opacity-50" />
-                     </div>
-                     <h3 class="text-lg font-bold">No Applicants Found</h3>
-                     <p class="text-base-content/60">There are currently no students registered as applicants.</p>
-                 </div>
-             @endforelse
+                        <div class="card-actions justify-center w-full mt-auto">
+                            <a href="{{ route('students.profile', $applicant->id) }}"
+                                class="btn btn-outline btn-primary btn-sm w-full">View Profile</a>
+                        </div>
+                    </div>
+                </div>
+            @empty
+                <div class="col-span-full flex flex-col items-center justify-center py-16 text-center">
+                    <div class="w-16 h-16 bg-base-200 rounded-full flex items-center justify-center mb-4">
+                        <x-icon name="o-users" class="w-8 h-8 opacity-50" />
+                    </div>
+                    <h3 class="text-lg font-bold">No Applicants Found</h3>
+                    <p class="text-base-content/60">There are currently no students registered as applicants.</p>
+                </div>
+            @endforelse
         </div>
-        
+
         <div class="mt-8 flex justify-center">
-            {{ $applicants->links() }} 
+            {{ $applicants->links() }}
         </div>
     </div>
 </x-layouts.main>

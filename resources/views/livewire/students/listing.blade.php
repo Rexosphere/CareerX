@@ -248,21 +248,13 @@ new class extends Component {
             </div>
 
             {{-- Pagination --}}
-            <div class="flex justify-center mt-4">
-                <div class="join">
-                    <button class="join-item btn btn-sm">
-                        <x-icon name="o-chevron-left" class="w-6 h-6" />
-                    </button>
-                    <button class="join-item btn btn-sm btn-active btn-primary">1</button>
-                    <button class="join-item btn btn-sm">2</button>
-                    <button class="join-item btn btn-sm">3</button>
-                    <button class="join-item btn btn-sm btn-disabled">...</button>
-                    <button class="join-item btn btn-sm">12</button>
-                    <button class="join-item btn btn-sm">
-                        <x-icon name="o-chevron-right" class="w-6 h-6" />
-                    </button>
+            @if(count($students) > 0)
+                <div class="flex justify-center mt-4">
+                    <div class="text-sm text-base-content/60">
+                        Showing {{ count($students) }} students
+                    </div>
                 </div>
-            </div>
+            @endif
         </div>
     </div>
 </div>

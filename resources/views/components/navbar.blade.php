@@ -29,16 +29,22 @@
                             <summary class="font-medium text-sm">Jobs</summary>
                             <ul class="p-2 bg-base-100 rounded-t-none w-64 shadow-lg z-50">
                                 <li><a href="{{ route('jobs.index') }}" class="font-bold">All Jobs</a></li>
-                                <li><a href="#">Software Engineering</a></li>
-                                <li><a href="#">Data Science & AI</a></li>
-                                <li><a href="#">Product Management</a></li>
-                                <li><a href="#">Design (UI/UX)</a></li>
-                                <li><a href="#">Marketing & Sales</a></li>
-                                <li><a href="#">Finance & Accounting</a></li>
-                                <li><a href="#">Human Resources</a></li>
-                                <li><a href="#">Engineering</a></li>
-                                <li><a href="#">Operations</a></li>
-                                <li><a href="#">Internships</a></li>
+                                <li><a href="{{ route('jobs.index', ['category' => 'Software Engineering']) }}">Software
+                                        Engineering</a></li>
+                                <li><a href="{{ route('jobs.index', ['category' => 'Data Science']) }}">Data Science &
+                                        AI</a></li>
+                                <li><a href="{{ route('jobs.index', ['category' => 'Product Management']) }}">Product
+                                        Management</a></li>
+                                <li><a href="{{ route('jobs.index', ['category' => 'Design']) }}">Design (UI/UX)</a></li>
+                                <li><a href="{{ route('jobs.index', ['category' => 'Marketing']) }}">Marketing & Sales</a>
+                                </li>
+                                <li><a href="{{ route('jobs.index', ['category' => 'Finance']) }}">Finance & Accounting</a>
+                                </li>
+                                <li><a href="{{ route('jobs.index', ['category' => 'Human Resources']) }}">Human
+                                        Resources</a></li>
+                                <li><a href="{{ route('jobs.index', ['category' => 'Engineering']) }}">Engineering</a></li>
+                                <li><a href="{{ route('jobs.index', ['category' => 'Operations']) }}">Operations</a></li>
+                                <li><a href="{{ route('jobs.index', ['search' => 'Internship']) }}">Internships</a></li>
                             </ul>
                         </details>
                     </li>
@@ -47,10 +53,10 @@
                         <details x-data @click.outside="$el.removeAttribute('open')">
                             <summary class="font-medium text-sm">Career Advice</summary>
                             <ul class="p-2 bg-base-100 rounded-t-none w-64 shadow-lg z-50">
-                                <li><a href="#">Cv creating sessions</a></li>
-                                <li><a href="#">Interview facing sessions</a></li>
-                                <li><a href="#">Industrial careers sessions</a></li>
-                                <li><a href="#">Academia careers sessions</a></li>
+                                <li><a href="{{ route('blog.index') }}">CV Creating Sessions</a></li>
+                                <li><a href="{{ route('blog.index') }}">Interview Facing Sessions</a></li>
+                                <li><a href="{{ route('blog.index') }}">Industrial Careers Sessions</a></li>
+                                <li><a href="{{ route('blog.index') }}">Academia Careers Sessions</a></li>
                             </ul>
                         </details>
                     </li>

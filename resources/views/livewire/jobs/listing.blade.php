@@ -17,6 +17,18 @@ new class extends Component {
     public int $salaryMin = 0;
     public array $industries = [];
     public ?int $selectedJob = null;
+    public int $perPage = 10;
+    public array $savedJobIds = [];
+
+    public function mount(): void
+    {
+        // Load saved job IDs for the current user
+        if (auth('web')->check() && auth('web')->user()->isStudent()) {
+            $this->savedJobIds = auth('web')->user()->savedJobs()
+                ->pluck('job_posting_id')
+                ->toArray();
+        }
+    }
 
     public function with(): array
     {
@@ -73,7 +85,8 @@ new class extends Component {
                 break;
         }
 
-        $jobs = $query->get()
+        $totalJobs = (clone $query)->count();
+        $jobs = $query->take($this->perPage)->get()
             ->map(function ($job) {
                 // Use current company logo from profile if available, otherwise fall back to stored logo or avatar
                 $logo = null;
@@ -103,6 +116,8 @@ new class extends Component {
         return [
             'jobs' => $jobs,
             'jobCount' => count($jobs),
+            'totalJobs' => $totalJobs,
+            'hasMoreJobs' => count($jobs) < $totalJobs,
             'jobTypeCounts' => $this->getJobTypeCounts(),
             'availableCategories' => $this->getAvailableCategories(),
         ];
@@ -116,6 +131,53 @@ new class extends Component {
         $this->jobTypes = [];
         $this->salaryMin = 0;
         $this->industries = [];
+    }
+
+    public function loadMore(): void
+    {
+        $this->perPage += 10;
+    }
+
+    public function toggleSaveJob(int $jobId): void
+    {
+        if (!auth('web')->check()) {
+            session()->flash('error', 'Please login to save jobs.');
+            $this->redirectRoute('login');
+            return;
+        }
+
+        if (!auth('web')->user()->isStudent()) {
+            session()->flash('error', 'Only students can save jobs.');
+            return;
+        }
+
+        $job = \App\Models\JobPosting::find($jobId);
+        if (!$job) {
+            session()->flash('error', 'Job not found.');
+            return;
+        }
+
+        // Toggle save/unsave
+        $existingSave = auth('web')->user()->savedJobs()
+            ->where('job_posting_id', $jobId)
+            ->first();
+
+        if ($existingSave) {
+            $existingSave->delete();
+            $this->savedJobIds = array_values(array_diff($this->savedJobIds, [$jobId]));
+            session()->flash('message', 'Job removed from saved jobs.');
+        } else {
+            auth('web')->user()->savedJobs()->create([
+                'job_posting_id' => $jobId,
+            ]);
+            $this->savedJobIds[] = $jobId;
+            session()->flash('message', 'Job saved successfully!');
+        }
+    }
+
+    public function isJobSaved(int $jobId): bool
+    {
+        return in_array($jobId, $this->savedJobIds);
     }
 
     protected function getJobTypeCounts(): array
@@ -280,9 +342,11 @@ new class extends Component {
                                     </p>
                                 </div>
                             </div>
-                            <button class="text-base-content/30 hover:text-error transition-colors">
-                                <x-icon name="o-heart" class="w-5 h-5" />
-                            </button>
+                            <button wire:click.stop="toggleSaveJob({{ $job['id'] }})" 
+                            class="{{ in_array($job['id'], $savedJobIds) ? 'text-error' : 'text-base-content/30 hover:text-error' }} transition-colors"
+                            title="{{ in_array($job['id'], $savedJobIds) ? 'Remove from saved' : 'Save job' }}">
+                            <x-icon name="{{ in_array($job['id'], $savedJobIds) ? 's-heart' : 'o-heart' }}" class="w-5 h-5" />
+                        </button>
                         </div>
 
                         <!-- Badges -->
@@ -340,12 +404,15 @@ new class extends Component {
         </div>
 
         <!-- Load More -->
-        @if($jobCount > 0)
-            <div class="flex justify-center">
-                <button class="btn btn-outline gap-2">
-                    <span>Load More Jobs</span>
-                    <x-icon name="o-arrow-down" class="w-4 h-4" />
+        @if($hasMoreJobs)
+            <div class="flex flex-col items-center gap-2">
+                <button wire:click="loadMore" wire:loading.attr="disabled" class="btn btn-outline gap-2">
+                    <span wire:loading.remove wire:target="loadMore">Load More Jobs</span>
+                    <span wire:loading wire:target="loadMore">Loading...</span>
+                    <x-icon name="o-arrow-down" class="w-4 h-4" wire:loading.remove wire:target="loadMore" />
+                    <span wire:loading wire:target="loadMore" class="loading loading-spinner loading-sm"></span>
                 </button>
+                <span class="text-sm text-base-content/50">Showing {{ $jobCount }} of {{ $totalJobs }} jobs</span>
             </div>
         @endif
     </div>

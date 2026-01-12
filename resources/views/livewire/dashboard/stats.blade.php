@@ -56,7 +56,8 @@ new class extends Component {
                         <div class="p-2 rounded-lg {{ $stat['iconBg'] }}">
                             <x-icon :name="'o-' . $stat['icon']" class="w-6 h-6" />
                         </div>
-                        <span class="badge badge-sm {{ $stat['changeType'] === 'positive' ? 'badge-success' : 'badge-ghost' }}">
+                        <span
+                            class="badge badge-sm {{ $stat['changeType'] === 'positive' ? 'badge-success' : 'badge-ghost' }}">
                             {{ $stat['change'] }}
                         </span>
                     </div>
@@ -76,7 +77,8 @@ new class extends Component {
             <div class="card-body p-0">
                 <div class="p-6 border-b border-base-300 flex justify-between items-center">
                     <h2 class="text-lg font-bold">Recent Job Postings</h2>
-                    <a href="#" class="link link-primary text-sm font-medium">View All</a>
+                    <a href="{{ route('company.dashboard') }}" class="link link-primary text-sm font-medium">View
+                        All</a>
                 </div>
 
                 <div class="overflow-x-auto">
@@ -106,10 +108,13 @@ new class extends Component {
                                     </td>
                                     <td class="text-right">
                                         <div class="flex items-center justify-end gap-2">
-                                            <button class="btn btn-ghost btn-xs" title="Edit">
+                                            <a href="{{ route('company.dashboard') }}" class="btn btn-ghost btn-xs"
+                                                title="Edit">
                                                 <x-icon name="o-pencil-square" class="w-4 h-4" />
-                                            </button>
-                                            <button class="btn btn-ghost btn-xs text-error" title="Delete">
+                                            </a>
+                                            <button
+                                                onclick="alert('This is demo data. Manage jobs from the Company Dashboard.')"
+                                                class="btn btn-ghost btn-xs text-error" title="Delete">
                                                 <x-icon name="o-trash" class="w-4 h-4" />
                                             </button>
                                         </div>
@@ -127,7 +132,8 @@ new class extends Component {
             <div class="card-body p-0">
                 <div class="p-6 border-b border-base-300 flex justify-between items-center">
                     <h2 class="text-lg font-bold">Recent Applications</h2>
-                    <a href="#" class="link link-primary text-sm font-medium">View All</a>
+                    <a href="{{ route('company.dashboard') }}" class="link link-primary text-sm font-medium">View
+                        All</a>
                 </div>
 
                 <div class="overflow-x-auto">
@@ -162,9 +168,10 @@ new class extends Component {
                                         </span>
                                     </td>
                                     <td class="text-right">
-                                        <button class="btn btn-primary btn-outline btn-xs">
+                                        <a href="{{ route('company.dashboard') }}"
+                                            class="btn btn-primary btn-outline btn-xs">
                                             View
-                                        </button>
+                                        </a>
                                     </td>
                                 </tr>
                             @endforeach

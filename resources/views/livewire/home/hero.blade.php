@@ -31,9 +31,11 @@ new class extends Component {
             </div>
 
             <div class="flex gap-8 justify-center flex-wrap">
-                <button class="btn btn-lg btn-primary px-8 rounded-lg">Find Talent</button>
-                <button class="btn btn-lg btn-outline px-8 rounded-lg hover:border-white hover:bg-black/20">Search
-                    Jobs</button>
+                <a href="{{ route('students.index') }}" class="btn btn-lg btn-primary px-8 rounded-lg"
+                    wire:navigate>Find Talent</a>
+                <a href="{{ route('jobs.index') }}"
+                    class="btn btn-lg btn-outline px-8 rounded-lg hover:border-white hover:bg-black/20"
+                    wire:navigate>Search Jobs</a>
             </div>
         </div>
     </div>
