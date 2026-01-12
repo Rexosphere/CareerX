@@ -47,6 +47,10 @@ Route::get('/terms-of-service', function () {
     return view('pages.legal.terms');
 })->name('legal.terms');
 
+Route::get('/about', function () {
+    return view('pages.about');
+})->name('about');
+
 // Auth Login Routes
 Route::get('/register', function () {
     return view('pages.auth.register');

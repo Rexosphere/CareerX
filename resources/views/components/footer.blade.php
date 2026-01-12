@@ -14,7 +14,8 @@
             </div>
 
             <!-- Links -->
-            <div class="flex gap-8 text-sm text-base-content/70">
+            <div class="flex gap-8 text-sm text-base-content/70 flex-wrap justify-center">
+                <a class="link link-hover hover:text-primary" href="{{ route('about') }}">About Us</a>
                 <a class="link link-hover hover:text-primary" href="{{ route('legal.privacy') }}">Privacy Policy</a>
                 <a class="link link-hover hover:text-primary" href="{{ route('legal.terms') }}">Terms of Service</a>
                 <a class="link link-hover hover:text-primary" href="mailto:support@careerx.lk">Contact Support</a>

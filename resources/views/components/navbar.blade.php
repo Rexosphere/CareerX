@@ -60,8 +60,6 @@
                             </ul>
                         </details>
                     </li>
-                    <li class="px-2"><a href="{{ route('resources.index') }}" class="font-medium text-sm text-nowrap">About
-                            Us</a></li>
 
                     @if($company)
                         <li class="px-2 border-l border-base-300 ml-2 pl-4"><a href="{{ route('students.index') }}"
