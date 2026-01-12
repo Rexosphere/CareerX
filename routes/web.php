@@ -38,6 +38,15 @@ Route::get('/blog/{slug}', function ($slug) {
     return view('pages.blog.show', ['slug' => $slug, 'post' => []]);
 })->name('blog.show');
 
+// Legal Pages
+Route::get('/privacy-policy', function () {
+    return view('pages.legal.privacy');
+})->name('legal.privacy');
+
+Route::get('/terms-of-service', function () {
+    return view('pages.legal.terms');
+})->name('legal.terms');
+
 // Auth Login Routes
 Route::get('/register', function () {
     return view('pages.auth.register');
