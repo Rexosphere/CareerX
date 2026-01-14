@@ -4,12 +4,9 @@
         <div class="flex flex-col md:flex-row justify-between items-center gap-6">
             <!-- Brand & Info -->
             <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded bg-primary/10 text-primary flex items-center justify-center">
-                    <x-icon name="o-academic-cap" class="w-5 h-5" />
-                </div>
+                <img src="{{ asset('careerxlogo.avif') }}" alt="CareerX Logo" class="h-12 w-auto object-contain">
                 <div>
                     <p class="text-sm font-bold">University of Moratuwa</p>
-                    <p class="text-xs text-base-content/60">CareerX</p>
                 </div>
             </div>
 

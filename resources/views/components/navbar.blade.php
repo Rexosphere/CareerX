@@ -12,10 +12,7 @@
         <!-- Left: Brand Logo -->
         <div class="flex-none flex items-center">
             <a href="{{ route('home') }}" class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded bg-primary/10 text-primary flex items-center justify-center">
-                    <x-icon name="o-academic-cap" class="w-5 h-5" />
-                </div>
-                <h2 class="text-lg font-bold tracking-tight text-base-content">CareerX</h2>
+                <img src="{{ asset('careerxlogo.avif') }}" alt="CareerX Logo" class="h-10 w-auto object-contain">
             </a>
         </div>
 
