@@ -12,9 +12,29 @@
         <!-- Left: Brand Logo -->
         <div class="flex-none flex items-center">
             <a href="{{ route('home') }}" class="flex items-center gap-3">
-                <img src="{{ asset('careerxlogo.avif') }}" alt="CareerX Logo" class="h-10 w-auto object-contain">
+                <img id="navbar-logo" src="{{ asset('careerxlogo-black.avif') }}" alt="CareerX Logo" class="h-10 w-auto object-contain">
             </a>
         </div>
+
+        <script>
+            function updateNavbarLogo() {
+                const logo = document.getElementById('navbar-logo');
+                if (logo) {
+                    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    if (prefersDark) {
+                        logo.src = '{{ asset('careerxlogo.avif') }}';
+                    } else {
+                        logo.src = '{{ asset('careerxlogo-black.avif') }}';
+                    }
+                }
+            }
+            
+            // Update on load
+            updateNavbarLogo();
+            
+            // Watch for theme changes
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateNavbarLogo);
+        </script>
 
         <!-- Center: Navigation Links (Desktop) -->
         <div class="hidden md:flex absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">

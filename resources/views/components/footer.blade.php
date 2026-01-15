@@ -4,11 +4,31 @@
         <div class="flex flex-col md:flex-row justify-between items-center gap-6">
             <!-- Brand & Info -->
             <div class="flex items-center gap-3">
-                <img src="{{ asset('careerxlogo.avif') }}" alt="CareerX Logo" class="h-12 w-auto object-contain">
+                <img id="footer-logo" src="{{ asset('careerxlogo-black.avif') }}" alt="CareerX Logo" class="h-12 w-auto object-contain">
                 <div>
                     <p class="text-sm font-bold">University of Moratuwa</p>
                 </div>
             </div>
+
+            <script>
+                function updateFooterLogo() {
+                    const logo = document.getElementById('footer-logo');
+                    if (logo) {
+                        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                        if (prefersDark) {
+                            logo.src = '{{ asset('careerxlogo.avif') }}';
+                        } else {
+                            logo.src = '{{ asset('careerxlogo-black.avif') }}';
+                        }
+                    }
+                }
+                
+                // Update on load
+                updateFooterLogo();
+                
+                // Watch for theme changes
+                window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateFooterLogo);
+            </script>
 
             <!-- Links -->
             <div class="flex gap-8 text-sm text-base-content/70 flex-wrap justify-center">
