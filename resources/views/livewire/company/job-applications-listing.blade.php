@@ -1,9 +1,16 @@
 <div class="bg-base-100 border border-base-200 shadow-sm rounded-xl overflow-hidden">
-    <div class="p-6 border-b border-base-200 bg-base-50/50">
+    <div class="p-6 border-b border-base-200 bg-base-50/50 flex items-center justify-between">
         <h3 class="font-bold text-lg flex items-center gap-2">
             <x-icon name="o-users" class="w-5 h-5 text-primary" />
             Received Applications
         </h3>
+        @if($applications->count() > 0 && $applications->filter(fn($app) => $app->cv_path)->count() > 0)
+            <a href="{{ route('cv.download.bulk', $job->id) }}" 
+                class="btn btn-primary btn-sm gap-2">
+                <x-icon name="o-arrow-down-tray" class="w-4 h-4" />
+                Download All CVs
+            </a>
+        @endif
     </div>
 
     @if($applications->count() > 0)

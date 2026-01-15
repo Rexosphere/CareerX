@@ -85,6 +85,10 @@ Route::post('/login', [AuthenticatedSessionController::class, 'store'])
 Route::post('/register', [RegisteredUserController::class, 'store'])
     ->middleware(['guest:web']);
 
+Route::get('/forgot-password', function () {
+    return view('livewire.auth.forgot-password');
+})->middleware(['guest:web'])->name('password.request');
+
 Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])
     ->middleware(['guest:web'])
     ->name('password.email');
@@ -117,6 +121,8 @@ Route::middleware(['auth:company'])->group(function () {
         }
         return view('pages.jobs.edit', ['job' => $job]);
     })->name('jobs.edit');
+    Route::get('/jobs/{job}/cvs/download', [App\Http\Controllers\CvDownloadController::class, 'downloadBulkCvs'])
+        ->name('cv.download.bulk');
     Route::get('/applicants', [ApplicantController::class, 'index'])->name('applicants.index');
 
     // Reuse dashboard for company for now if needed, or redirect
@@ -138,7 +144,7 @@ Route::post('/email/verification-notification', [EmailVerificationNotificationCo
     ->name('verification.send');
 
 // CV Download Routes (Protected)
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth:web,company'])->group(function () {
     Route::get('/cv/profile/{student_id}', [App\Http\Controllers\CvDownloadController::class, 'downloadFromProfile'])
         ->name('cv.download.profile');
     Route::get('/cv/application/{application_id}', [App\Http\Controllers\CvDownloadController::class, 'downloadFromApplication'])

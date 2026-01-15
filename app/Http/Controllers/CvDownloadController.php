@@ -25,10 +25,10 @@ class CvDownloadController extends Controller
         }
 
         // Authorization check
-        $user = auth()->user();
+        $user = auth('web')->user();
         
         // Allow if user is viewing their own profile
-        if ($user->id === $studentId) {
+        if ($user && $user->id === $studentId) {
             return $this->serveCv($profile->cv_path, $student->name);
         }
 
@@ -71,7 +71,7 @@ class CvDownloadController extends Controller
 
         $companyId = auth('company')->id();
         
-        if ($application->jobPosting->company_id !== $companyId) {
+        if ($application->jobPosting->company_id != $companyId) {
             abort(403, 'You do not have permission to access this CV');
         }
 
@@ -96,5 +96,72 @@ class CvDownloadController extends Controller
         return response($file, 200)
             ->header('Content-Type', $mimeType)
             ->header('Content-Disposition', 'inline; filename="' . $filename . '"');
+    }
+
+    /**
+     * Download all CVs for a job posting as a zip file
+     * Only accessible by the company that owns the job posting
+     */
+    public function downloadBulkCvs(int $jobId): Response
+    {
+        $job = \App\Models\JobPosting::with(['applications.student'])->findOrFail($jobId);
+
+        // Authorization check - only the company that owns the job posting can access
+        if (!auth('company')->check()) {
+            abort(403, 'You must be logged in as a company to access this feature');
+        }
+
+        $companyId = auth('company')->id();
+        
+        if ($job->company_id != $companyId) {
+            abort(403, 'You do not have permission to download these CVs');
+        }
+
+        // Get all applications with CVs
+        $applications = $job->applications()->whereNotNull('cv_path')->get();
+
+        if ($applications->isEmpty()) {
+            abort(404, 'No CVs found for this job posting');
+        }
+
+        // Create a temporary zip file
+        $zipFileName = 'CVs_' . preg_replace('/[^A-Za-z0-9_\-]/', '_', $job->title) . '_' . now()->format('Y-m-d') . '.zip';
+        $zipPath = storage_path('app/temp/' . $zipFileName);
+
+        // Ensure temp directory exists
+        if (!file_exists(storage_path('app/temp'))) {
+            mkdir(storage_path('app/temp'), 0755, true);
+        }
+
+        $zip = new \ZipArchive();
+        if ($zip->open($zipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true) {
+            abort(500, 'Could not create zip file');
+        }
+
+        // Add each CV to the zip
+        foreach ($applications as $application) {
+            $cvPath = Storage::disk('public')->path($application->cv_path);
+            
+            if (file_exists($cvPath)) {
+                $studentName = preg_replace('/[^A-Za-z0-9_\-]/', '_', $application->student->name);
+                $extension = pathinfo($cvPath, PATHINFO_EXTENSION);
+                $zipEntryName = $studentName . '_CV.' . $extension;
+                
+                // Handle duplicate names by appending numbers
+                $counter = 1;
+                $originalName = $zipEntryName;
+                while ($zip->locateName($zipEntryName) !== false) {
+                    $zipEntryName = $studentName . '_CV_' . $counter . '.' . $extension;
+                    $counter++;
+                }
+                
+                $zip->addFile($cvPath, $zipEntryName);
+            }
+        }
+
+        $zip->close();
+
+        // Send the zip file and delete it afterwards
+        return response()->download($zipPath, $zipFileName)->deleteFileAfterSend(true);
     }
 }

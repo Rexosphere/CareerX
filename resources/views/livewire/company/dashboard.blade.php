@@ -73,6 +73,7 @@
                             <th class="pl-6 py-4">Job Title</th>
                             <th class="py-4">Category</th>
                             <th class="py-4">Type</th>
+                            <th class="py-4">Applications</th>
                             <th class="py-4">Posted Date</th>
                             <th class="text-right pr-6 py-4">Actions</th>
                         </tr>
@@ -91,19 +92,27 @@
                                     <span class="badge badge-outline text-xs">{{ ucfirst($job->type) }}</span>
                                 </td>
                                 <td class="py-4">
+                                    <a href="{{ route('jobs.applications', $job->id) }}" 
+                                        class="flex items-center gap-2 hover:text-primary transition-colors">
+                                        <x-icon name="o-users" class="w-4 h-4" />
+                                        <span class="font-semibold">{{ $job->applications_count }}</span>
+                                        @if($job->applications_count > 0)
+                                            <span class="badge badge-secondary badge-sm">{{ $job->applications_count }}</span>
+                                        @else
+                                            <span class="text-xs text-base-content/50">No applications</span>
+                                        @endif
+                                    </a>
+                                </td>
+                                <td class="py-4">
                                     <div class="text-sm opacity-70">{{ $job->created_at->format('M d, Y') }}</div>
                                 </td>
                                 <td class="text-right pr-6 py-4">
                                     <div class="flex items-center justify-end gap-2">
                                         <a href="{{ route('jobs.applications', $job->id) }}" 
-                                            class="btn btn-ghost btn-sm btn-square text-base-content/70 hover:text-secondary hover:bg-secondary/10"
+                                            class="btn btn-ghost btn-sm text-base-content/70 hover:text-secondary hover:bg-secondary/10 gap-1"
                                             title="View Applications">
-                                            <div class="indicator">
-                                                <x-icon name="o-users" class="w-5 h-5" />
-                                                @if($job->applications_count > 0)
-                                                    <span class="badge badge-xs badge-secondary indicator-item border-none w-2 h-2 p-0"></span>
-                                                @endif
-                                            </div>
+                                            <x-icon name="o-users" class="w-4 h-4" />
+                                            <span class="font-semibold">{{ $job->applications_count }}</span>
                                         </a>
                                         <a href="{{ route('jobs.edit', $job->id) }}"
                                             class="btn btn-ghost btn-sm btn-square text-base-content/70 hover:text-primary hover:bg-primary/10"
