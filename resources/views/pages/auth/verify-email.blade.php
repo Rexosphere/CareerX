@@ -1,8 +1,11 @@
+@volt('verify-email')
 <?php
 
 use Livewire\Volt\Component;
 
 new class extends Component {
+    public $status = '';
+    
     public function resendVerification(): void
     {
         if (auth()->user()->hasVerifiedEmail()) {
@@ -12,7 +15,7 @@ new class extends Component {
 
         auth()->user()->sendEmailVerificationNotification();
 
-        session()->flash('message', 'A fresh verification link has been sent to your email address.');
+        $this->status = 'verification-link-sent';
     }
 }; ?>
 
@@ -34,9 +37,9 @@ new class extends Component {
                 </div>
 
                 <!-- Success Message -->
-                @if (session()->has('message'))
+                @if ($status === 'verification-link-sent' || session()->has('message'))
                     <x-alert icon="o-check-circle" class="alert-success mb-4 shadow-sm py-2 text-sm">
-                        {{ session('message') }}
+                        A fresh verification link has been sent to your email address.
                     </x-alert>
                 @endif
 
@@ -82,3 +85,4 @@ new class extends Component {
         </div>
     </div>
 </x-layouts.main>
+@endvolt
