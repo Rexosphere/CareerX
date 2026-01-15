@@ -19,13 +19,18 @@ new class extends Component {
     public ?int $selectedJob = null;
     public int $perPage = 10;
     public array $savedJobIds = [];
+    public array $appliedJobIds = [];
 
     public function mount(): void
     {
-        // Load saved job IDs for the current user
+        // Load saved job IDs and applied job IDs for the current user
         if (auth('web')->check() && auth('web')->user()->isStudent()) {
             $this->savedJobIds = auth('web')->user()->savedJobs()
                 ->pluck('job_posting_id')
+                ->toArray();
+            
+            $this->appliedJobIds = auth('web')->user()->applications()
+                ->pluck('job_id')
                 ->toArray();
         }
     }
@@ -109,6 +114,7 @@ new class extends Component {
                     'location' => $job->location,
                     'salary' => $job->salary_range ?? 'Negotiable',
                     'postedDays' => (int) $job->created_at->diffInDays(),
+                    'hasApplied' => in_array($job->id, $this->appliedJobIds),
                 ];
             })
             ->toArray();
@@ -204,6 +210,15 @@ new class extends Component {
     {
         $this->selectedJob = $jobId;
         $this->dispatch('open-job-modal', jobId: $jobId);
+    }
+
+    #[Livewire\Attributes\On('application-submitted')]
+    public function refreshAppliedJobs(int $jobId): void
+    {
+        // Add the newly applied job ID to the list
+        if (!in_array($jobId, $this->appliedJobIds)) {
+            $this->appliedJobIds[] = $jobId;
+        }
     }
 }; ?>
 
@@ -353,6 +368,12 @@ new class extends Component {
                         <div class="flex flex-wrap gap-2 mb-4">
                             <span class="badge badge-primary badge-sm">{{ $job['type'] }}</span>
                             <span class="badge badge-secondary badge-sm">{{ $job['workMode'] }}</span>
+                            @if($job['hasApplied'])
+                                <span class="badge badge-success badge-sm gap-1">
+                                    <x-icon name="o-check-circle" class="w-3 h-3" />
+                                    Applied
+                                </span>
+                            @endif
                         </div>
 
                         <!-- Details -->
@@ -375,10 +396,18 @@ new class extends Component {
 
                         <!-- Actions -->
                         <div class="card-actions pt-4 border-t border-base-300">
-                            <button wire:click="showJobDetails({{ $job['id'] }})"
-                                class="btn btn-primary btn-outline btn-block btn-sm">
-                                Apply Now
-                            </button>
+                            @if($job['hasApplied'])
+                                <button disabled
+                                    class="btn btn-success btn-outline btn-block btn-sm opacity-60 cursor-not-allowed">
+                                    <x-icon name="o-check-circle" class="w-4 h-4" />
+                                    Already Applied
+                                </button>
+                            @else
+                                <button wire:click="showJobDetails({{ $job['id'] }})"
+                                    class="btn btn-primary btn-outline btn-block btn-sm">
+                                    Apply Now
+                                </button>
+                            @endif
                         </div>
                     </div>
                 </div>

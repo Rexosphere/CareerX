@@ -34,6 +34,20 @@ new class extends Component {
             $logo = 'https://ui-avatars.com/api/?name=' . urlencode($job->company_name);
         }
 
+        // Check if user has already applied
+        $hasApplied = false;
+        $applicationStatus = null;
+        if (auth('web')->check() && auth('web')->user()->isStudent()) {
+            $application = auth('web')->user()->applications()
+                ->where('job_id', $this->jobId)
+                ->first();
+            
+            if ($application) {
+                $hasApplied = true;
+                $applicationStatus = $application->status;
+            }
+        }
+
         $jobDetails = [
             'id' => $job->id,
             'title' => $job->title,
@@ -51,6 +65,8 @@ new class extends Component {
             'prerequisites' => $job->prerequisites,
             'responsibilities' => [], // Can be extracted from description if structured
             'requirements' => is_array($job->requirements) ? $job->requirements : [],
+            'hasApplied' => $hasApplied,
+            'applicationStatus' => $applicationStatus,
         ];
 
         return [
@@ -143,7 +159,7 @@ new class extends Component {
 
         session()->flash('message', 'Application submitted successfully!');
         $this->closeModal();
-        $this->dispatch('application-submitted');
+        $this->dispatch('application-submitted', jobId: $this->jobId);
     }
 }; ?>
 
@@ -216,6 +232,12 @@ new class extends Component {
                             <x-icon name="o-academic-cap" class="w-4 h-4" />
                             {{ $job['preferredDept'] }}
                         </div>
+                        @if($job['hasApplied'])
+                            <div class="badge badge-success gap-2">
+                                <x-icon name="o-check-circle" class="w-4 h-4" />
+                                Applied ({{ ucfirst($job['applicationStatus']) }})
+                            </div>
+                        @endif
                     </div>
 
                     <!-- Job Description -->
@@ -293,10 +315,17 @@ new class extends Component {
                             </button>
                         @endif
 
-                        <button wire:click="applyNow" class="btn btn-primary gap-2 flex-1 sm:flex-none shadow-sm">
-                            Apply Now
-                            <x-icon name="o-arrow-right" class="w-5 h-5" />
-                        </button>
+                        @if($job['hasApplied'])
+                            <button disabled class="btn btn-success btn-outline gap-2 flex-1 sm:flex-none shadow-sm opacity-60 cursor-not-allowed">
+                                <x-icon name="o-check-circle" class="w-5 h-5" />
+                                Already Applied
+                            </button>
+                        @else
+                            <button wire:click="applyNow" class="btn btn-primary gap-2 flex-1 sm:flex-none shadow-sm">
+                                Apply Now
+                                <x-icon name="o-arrow-right" class="w-5 h-5" />
+                            </button>
+                        @endif
                     </div>
                 </div>
             </div>
