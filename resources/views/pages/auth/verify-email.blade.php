@@ -1,13 +1,33 @@
 @volt('verify-email')
 <?php
 
+use Livewire\Attributes\On;
+
 new class extends \Livewire\Volt\Component {
     public $status = '';
+    
+    public function mount(): void
+    {
+        // If already verified, redirect immediately
+        if (auth()->user()->hasVerifiedEmail()) {
+            $this->redirectRoute('home');
+        }
+    }
+    
+    public function checkVerification(): void
+    {
+        // Refresh the user model from database
+        auth()->user()->refresh();
+        
+        if (auth()->user()->hasVerifiedEmail()) {
+            $this->redirectRoute('home');
+        }
+    }
     
     public function resendVerification(): void
     {
         if (auth()->user()->hasVerifiedEmail()) {
-            $this->redirectRoute('onboarding');
+            $this->redirectRoute('home');
             return;
         }
 
@@ -17,8 +37,9 @@ new class extends \Livewire\Volt\Component {
     }
 }; ?>
 
+
 <x-layouts.main title="Verify Email Address">
-    <div class="min-h-[calc(100vh-4rem)] flex items-center justify-center p-4 bg-base-200/50">
+    <div class="min-h-[calc(100vh-4rem)] flex items-center justify-center p-4 bg-base-200/50" wire:poll.3s="checkVerification">
         <div class="card bg-base-100 shadow-2xl border border-base-200 w-full max-w-md mx-auto">
             <div class="card-body p-6 sm:p-8">
                 <!-- Header -->
@@ -41,8 +62,17 @@ new class extends \Livewire\Volt\Component {
                     </x-alert>
                 @endif
 
+                <!-- Auto-checking indicator -->
+                <div class="alert alert-info mb-4">
+                    <x-icon name="o-arrow-path" class="w-5 h-5 animate-spin" />
+                    <div class="text-sm">
+                        <p class="font-medium">Checking verification status...</p>
+                        <p class="text-xs opacity-75">This page will auto-refresh when you verify your email</p>
+                    </div>
+                </div>
+
                 <!-- Info Box -->
-                <div class="alert alert-info mb-5">
+                <div class="alert alert-neutral mb-5">
                     <x-icon name="o-information-circle" class="w-5 h-5" />
                     <div class="text-sm">
                         <p class="font-medium mb-1">Email sent to:</p>
@@ -60,6 +90,9 @@ new class extends \Livewire\Volt\Component {
                     </ol>
                     <p class="text-xs mt-3 text-base-content/50">
                         <strong>Note:</strong> If you don't see the email, check your spam or junk folder.
+                    </p>
+                    <p class="text-xs mt-2 text-info">
+                        <strong>Tip:</strong> You can open the verification link on any browser or device!
                     </p>
                 </div>
 
