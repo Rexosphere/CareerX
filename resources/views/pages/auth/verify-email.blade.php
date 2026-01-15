@@ -1,8 +1,6 @@
 @volt('verify-email')
 <?php
 
-use Livewire\Attributes\On;
-
 new class extends \Livewire\Volt\Component {
     public $status = '';
     
