@@ -95,7 +95,6 @@
                                     <a href="{{ route('jobs.applications', $job->id) }}" 
                                         class="flex items-center gap-2 hover:text-primary transition-colors">
                                         <x-icon name="o-users" class="w-4 h-4" />
-                                        <span class="font-semibold">{{ $job->applications_count }}</span>
                                         @if($job->applications_count > 0)
                                             <span class="badge badge-secondary badge-sm">{{ $job->applications_count }}</span>
                                         @else
@@ -108,12 +107,6 @@
                                 </td>
                                 <td class="text-right pr-6 py-4">
                                     <div class="flex items-center justify-end gap-2">
-                                        <a href="{{ route('jobs.applications', $job->id) }}" 
-                                            class="btn btn-ghost btn-sm text-base-content/70 hover:text-secondary hover:bg-secondary/10 gap-1"
-                                            title="View Applications">
-                                            <x-icon name="o-users" class="w-4 h-4" />
-                                            <span class="font-semibold">{{ $job->applications_count }}</span>
-                                        </a>
                                         <a href="{{ route('jobs.edit', $job->id) }}"
                                             class="btn btn-ghost btn-sm btn-square text-base-content/70 hover:text-primary hover:bg-primary/10"
                                             title="Edit Job">
