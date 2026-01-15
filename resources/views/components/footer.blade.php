@@ -11,10 +11,10 @@
             </div>
 
             <!-- Second Row: Logos -->
-            <div class="flex items-center justify-center gap-8">
+            <div class="flex flex-col md:flex-row items-center justify-center gap-6 md:gap-8">
                 <img id="footer-logo" src="{{ asset('careerxlogo-black.avif') }}" alt="CareerX Logo" class="h-12 w-auto object-contain mt-4">
-                <img src="{{ asset('sltlogo1.avif') }}" alt="SLT Logo 1" class="h-24 w-auto object-contain ml-8">
-                <img src="{{ asset('sltlogo2.avif') }}" alt="SLT Logo 2" class="h-24 w-auto object-contain">
+                <img src="{{ asset('sltlogo1.avif') }}" alt="SLT Logo 1" class="h-24 w-auto object-contain md:ml-16">
+                <img src="{{ asset('sltlogo2.avif') }}" alt="SLT Logo 2" class="h-24 w-auto object-contain md:ml-10">
                 <img src="{{ asset('Procomm.avif') }}" alt="Procomm Logo" class="h-32 w-auto object-contain mt-4">
             </div>
 
