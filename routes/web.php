@@ -104,15 +104,13 @@ Route::middleware(['auth:company'])->group(function () {
     Route::get('/jobs/create', function () {
         return view('pages.jobs.create');
     })->name('jobs.create');
-    Route::get('/jobs/{job}/applications', function ($jobId) {
-        $job = \App\Models\JobPosting::findOrFail($jobId);
+    Route::get('/jobs/{job}/applications', function (\App\Models\JobPosting $job) {
         if ($job->company_id !== auth('company')->id()) {
             abort(403);
         }
         return view('pages.jobs.applications', ['job' => $job]);
     })->name('jobs.applications');
-    Route::get('/jobs/{job}/edit', function ($jobId) {
-        $job = \App\Models\JobPosting::findOrFail($jobId);
+    Route::get('/jobs/{job}/edit', function (\App\Models\JobPosting $job) {
         // Authorization check
         if ($job->company_id !== auth('company')->id()) {
             abort(403);
