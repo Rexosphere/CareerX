@@ -15,9 +15,28 @@ new class extends Component {
         $user = User::with(['studentProfile', 'researchProjects'])->findOrFail($this->studentId);
         $profile = $user->studentProfile;
 
+        // Check if current user can access CV
+        $canAccessCv = false;
+        if (auth()->check()) {
+            // Allow if viewing own profile
+            if (auth()->id() === $this->studentId) {
+                $canAccessCv = true;
+            }
+            // Allow if company has received application from this student
+            elseif (auth('company')->check()) {
+                $companyId = auth('company')->id();
+                $canAccessCv = \App\Models\Application::whereHas('jobPosting', function ($query) use ($companyId) {
+                    $query->where('company_id', $companyId);
+                })
+                ->where('student_id', $this->studentId)
+                ->exists();
+            }
+        }
+
         return [
             'user' => $user,
             'profile' => $profile,
+            'canAccessCv' => $canAccessCv,
         ];
     }
 }; ?>
@@ -68,8 +87,8 @@ new class extends Component {
                         <span>GitHub</span>
                     </a>
                 @endif
-                @if($profile?->cv_path)
-                    <a href="{{ Storage::url($profile->cv_path) }}" target="_blank" class="btn btn-outline gap-2 min-w-[140px]">
+                @if($profile?->cv_path && $canAccessCv)
+                    <a href="{{ route('cv.download.profile', $user->id) }}" target="_blank" class="btn btn-outline gap-2 min-w-[140px]">
                         <x-icon name="o-arrow-down-tray" class="w-5 h-5" />
                         <span>Download CV</span>
                     </a>

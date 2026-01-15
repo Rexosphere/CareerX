@@ -42,7 +42,7 @@
                             </td>
                             <td class="text-right pr-6 py-4">
                                 @if($application->cv_path)
-                                    <a href="{{ Storage::url($application->cv_path) }}" target="_blank"
+                                    <a href="{{ route('cv.download.application', $application->id) }}" target="_blank"
                                         class="btn btn-sm btn-outline btn-primary">
                                         View CV
                                     </a>

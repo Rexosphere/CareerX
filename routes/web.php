@@ -110,6 +110,14 @@ Route::get('/email/verify', function () {
     return view('pages.auth.verify-email');
 })->middleware('auth')->name('verification.notice');
 
+// CV Download Routes (Protected)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/cv/profile/{student_id}', [App\Http\Controllers\CvDownloadController::class, 'downloadFromProfile'])
+        ->name('cv.download.profile');
+    Route::get('/cv/application/{application_id}', [App\Http\Controllers\CvDownloadController::class, 'downloadFromApplication'])
+        ->name('cv.download.application');
+});
+
 // Student (Web) Routes
 Route::middleware(['auth:web', 'verified'])->group(function () {
     Route::get('/onboarding', function () {

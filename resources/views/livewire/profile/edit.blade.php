@@ -287,7 +287,7 @@ new class extends Component {
                                 <p class="text-xs opacity-70">Your CV is uploaded and ready</p>
                             </div>
                             <div class="flex gap-2">
-                                <a href="{{ Storage::url($profile->cv_path) }}" target="_blank"
+                                <a href="{{ route('cv.download.profile', auth()->id()) }}" target="_blank"
                                     class="btn btn-sm btn-ghost gap-2">
                                     <x-icon name="o-eye" class="w-4 h-4" />
                                     View
