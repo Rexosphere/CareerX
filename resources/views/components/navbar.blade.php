@@ -12,71 +12,19 @@
         <!-- Left: Brand Logo -->
         <div class="flex-none flex items-center">
             <a href="{{ route('home') }}" class="flex items-center gap-3">
-                <img id="navbar-logo" src="{{ asset('careerxlogo-black.avif') }}" alt="CareerX Logo" class="h-10 w-auto object-contain">
+                <img src="{{ asset('careerxlogo-black.avif') }}" alt="CareerX Logo" class="h-10 w-auto object-contain dark:hidden">
+                <img src="{{ asset('careerxlogo.avif') }}" alt="CareerX Logo" class="h-10 w-auto object-contain hidden dark:block">
             </a>
         </div>
-
-        <script>
-            function updateNavbarLogo() {
-                const logo = document.getElementById('navbar-logo');
-                if (logo) {
-                    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                    if (prefersDark) {
-                        logo.src = '{{ asset('careerxlogo.avif') }}';
-                    } else {
-                        logo.src = '{{ asset('careerxlogo-black.avif') }}';
-                    }
-                }
-            }
-            
-            // Update on load
-            updateNavbarLogo();
-            
-            // Watch for theme changes
-            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateNavbarLogo);
-        </script>
 
         <!-- Center: Navigation Links (Desktop) -->
         <div class="hidden md:flex absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
             <ul class="menu menu-horizontal px-1 gap-2">
                 @if(!$admin)
                     {{-- Shared Links for Students/Companies/Guests --}}
-                    <li class="px-2">
-                        <details x-data @click.outside="$el.removeAttribute('open')">
-                            <summary class="font-medium text-sm">Jobs</summary>
-                            <ul class="p-2 bg-base-100 rounded-t-none w-64 shadow-lg z-50">
-                                <li><a href="{{ route('jobs.index') }}" class="font-bold">All Jobs</a></li>
-                                <li><a href="{{ route('jobs.index', ['category' => 'Software Engineering']) }}">Software
-                                        Engineering</a></li>
-                                <li><a href="{{ route('jobs.index', ['category' => 'Data Science']) }}">Data Science &
-                                        AI</a></li>
-                                <li><a href="{{ route('jobs.index', ['category' => 'Product Management']) }}">Product
-                                        Management</a></li>
-                                <li><a href="{{ route('jobs.index', ['category' => 'Design']) }}">Design (UI/UX)</a></li>
-                                <li><a href="{{ route('jobs.index', ['category' => 'Marketing']) }}">Marketing & Sales</a>
-                                </li>
-                                <li><a href="{{ route('jobs.index', ['category' => 'Finance']) }}">Finance & Accounting</a>
-                                </li>
-                                <li><a href="{{ route('jobs.index', ['category' => 'Human Resources']) }}">Human
-                                        Resources</a></li>
-                                <li><a href="{{ route('jobs.index', ['category' => 'Engineering']) }}">Engineering</a></li>
-                                <li><a href="{{ route('jobs.index', ['category' => 'Operations']) }}">Operations</a></li>
-                                <li><a href="{{ route('jobs.index', ['search' => 'Internship']) }}">Internships</a></li>
-                            </ul>
-                        </details>
-                    </li>
+                    <li class="px-2"><a href="{{ route('jobs.index') }}" class="font-medium text-sm">Jobs</a></li>
                     <li class="px-2"><a href="{{ route('courses.index') }}" class="font-medium text-sm">Courses</a></li>
-                    <li class="px-2">
-                        <details x-data @click.outside="$el.removeAttribute('open')">
-                            <summary class="font-medium text-sm">Career Advice</summary>
-                            <ul class="p-2 bg-base-100 rounded-t-none w-64 shadow-lg z-50">
-                                <li><a href="{{ route('blog.index') }}">CV Creating Sessions</a></li>
-                                <li><a href="{{ route('blog.index') }}">Interview Facing Sessions</a></li>
-                                <li><a href="{{ route('blog.index') }}">Industrial Careers Sessions</a></li>
-                                <li><a href="{{ route('blog.index') }}">Academia Careers Sessions</a></li>
-                            </ul>
-                        </details>
-                    </li>
+                    <li class="px-2"><a href="{{ route('blog.index') }}" class="font-medium text-sm">Career Advice</a></li>
 
                     @if($company)
                         <li class="px-2 border-l border-base-300 ml-2 pl-4"><a href="{{ route('students.index') }}"

@@ -12,31 +12,12 @@
 
             <!-- Second Row: Logos -->
             <div class="flex flex-col md:flex-row items-center justify-center gap-6 md:gap-8">
-                <img id="footer-logo" src="{{ asset('careerxlogo-black.avif') }}" alt="CareerX Logo" class="h-12 w-auto object-contain mt-4">
+                <img src="{{ asset('careerxlogo-black.avif') }}" alt="CareerX Logo" class="h-12 w-auto object-contain mt-4 dark:hidden">
+                <img src="{{ asset('careerxlogo.avif') }}" alt="CareerX Logo" class="h-12 w-auto object-contain mt-4 hidden dark:block">
                 <img src="{{ asset('sltlogo1.avif') }}" alt="SLT Logo 1" class="h-24 w-auto object-contain md:ml-24">
                 <img src="{{ asset('sltlogo2.avif') }}" alt="SLT Logo 2" class="h-24 w-auto object-contain md:ml-10">
                 <img src="{{ asset('Procomm.avif') }}" alt="Procomm Logo" class="h-32 w-auto object-contain mt-4">
             </div>
-
-            <script>
-                function updateFooterLogo() {
-                    const logo = document.getElementById('footer-logo');
-                    if (logo) {
-                        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                        if (prefersDark) {
-                            logo.src = '{{ asset('careerxlogo.avif') }}';
-                        } else {
-                            logo.src = '{{ asset('careerxlogo-black.avif') }}';
-                        }
-                    }
-                }
-                
-                // Update on load
-                updateFooterLogo();
-                
-                // Watch for theme changes
-                window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateFooterLogo);
-            </script>
         </div>
     </div>
 </footer>
