@@ -213,10 +213,10 @@ new class extends Component {
     }
 
     #[Livewire\Attributes\On('application-submitted')]
-    public function refreshAppliedJobs(int $jobId): void
+    public function refreshAppliedJobs(?int $jobId = null): void
     {
         // Add the newly applied job ID to the list
-        if (!in_array($jobId, $this->appliedJobIds)) {
+        if ($jobId && !in_array($jobId, $this->appliedJobIds)) {
             $this->appliedJobIds[] = $jobId;
         }
     }

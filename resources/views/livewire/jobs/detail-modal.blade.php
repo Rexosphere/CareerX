@@ -146,14 +146,9 @@ new class extends Component {
             return;
         }
 
-        // Get student's CV from profile
-        $studentProfile = auth()->user()->studentProfile;
-        $cvPath = $studentProfile ? $studentProfile->cv_path : null;
-
         // Create application
         auth()->user()->applications()->create([
             'job_id' => $this->jobId,
-            'cv_path' => $cvPath,
             'status' => 'pending',
         ]);
 

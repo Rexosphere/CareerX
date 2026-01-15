@@ -58,9 +58,10 @@ class CvDownloadController extends Controller
      */
     public function downloadFromApplication(int $applicationId): Response
     {
-        $application = Application::with(['student', 'jobPosting'])->findOrFail($applicationId);
+        $application = Application::with(['student.studentProfile', 'jobPosting'])->findOrFail($applicationId);
 
-        if (!$application->cv_path) {
+        // Get CV from student profile instead of application
+        if (!$application->student->studentProfile || !$application->student->studentProfile->cv_path) {
             abort(404, 'CV not found');
         }
 
@@ -75,7 +76,7 @@ class CvDownloadController extends Controller
             abort(403, 'You do not have permission to access this CV');
         }
 
-        return $this->serveCv($application->cv_path, $application->student->name);
+        return $this->serveCv($application->student->studentProfile->cv_path, $application->student->name);
     }
 
     /**
@@ -117,8 +118,13 @@ class CvDownloadController extends Controller
             abort(403, 'You do not have permission to download these CVs');
         }
 
-        // Get all applications with CVs
-        $applications = $job->applications()->whereNotNull('cv_path')->get();
+        // Get all applications with students who have CVs in their profiles
+        $applications = $job->applications()
+            ->with('student.studentProfile')
+            ->whereHas('student.studentProfile', function ($query) {
+                $query->whereNotNull('cv_path');
+            })
+            ->get();
 
         if ($applications->isEmpty()) {
             abort(404, 'No CVs found for this job posting');
@@ -140,7 +146,12 @@ class CvDownloadController extends Controller
 
         // Add each CV to the zip
         foreach ($applications as $application) {
-            $cvPath = Storage::disk('public')->path($application->cv_path);
+            // Get CV from student profile
+            if (!$application->student->studentProfile || !$application->student->studentProfile->cv_path) {
+                continue; // Skip if student doesn't have a CV
+            }
+            
+            $cvPath = Storage::disk('public')->path($application->student->studentProfile->cv_path);
             
             if (file_exists($cvPath)) {
                 $studentName = preg_replace('/[^A-Za-z0-9_\-]/', '_', $application->student->name);

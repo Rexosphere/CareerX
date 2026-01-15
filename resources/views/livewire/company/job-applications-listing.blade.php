@@ -4,7 +4,7 @@
             <x-icon name="o-users" class="w-5 h-5 text-primary" />
             Received Applications
         </h3>
-        @if($applications->count() > 0 && $applications->filter(fn($app) => $app->cv_path)->count() > 0)
+        @if($applications->count() > 0 && $applications->filter(fn($app) => $app->student->studentProfile?->cv_path)->count() > 0)
             <a href="{{ route('cv.download.bulk', $job->id) }}" 
                 class="btn btn-primary btn-sm gap-2">
                 <x-icon name="o-arrow-down-tray" class="w-4 h-4" />
@@ -48,7 +48,7 @@
                                 <span class="badge badge-sm badge-outline">{{ ucfirst($application->status) }}</span>
                             </td>
                             <td class="text-right pr-6 py-4">
-                                @if($application->cv_path)
+                                @if($application->student->studentProfile?->cv_path)
                                     <a href="{{ route('cv.download.application', $application->id) }}" target="_blank"
                                         class="btn btn-sm btn-outline btn-primary">
                                         View CV
