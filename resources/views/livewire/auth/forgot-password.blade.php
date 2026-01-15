@@ -40,7 +40,7 @@
                         name="email"
                         type="email"
                         icon="o-envelope"
-                        placeholder="index@uom.lk"
+                        placeholder="your.email@example.com"
                         value="{{ old('email') }}"
                         required
                         autofocus

@@ -51,7 +51,7 @@ new class extends Component {
         <form wire:submit="login" class="space-y-5">
             <!-- Email -->
             <div class="form-control">
-                <x-input label="Email Address" wire:model="email" icon="o-envelope" placeholder="index@uom.lk"
+                <x-input label="Email Address" wire:model="email" icon="o-envelope" placeholder="your.email@example.com"
                     type="email" class="input-bordered focus:border-primary focus:ring-primary" />
             </div>
 

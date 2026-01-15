@@ -105,8 +105,13 @@ Route::middleware(['auth:company'])->group(function () {
     Route::get('/company/dashboard', \App\Livewire\Company\Dashboard::class)->name('company.dashboard');
 });
 
+// Email Verification Routes
+Route::get('/email/verify', function () {
+    return view('pages.auth.verify-email');
+})->middleware('auth')->name('verification.notice');
+
 // Student (Web) Routes
-Route::middleware(['auth:web'])->group(function () {
+Route::middleware(['auth:web', 'verified'])->group(function () {
     Route::get('/onboarding', function () {
         return view('pages.onboarding.index');
     })->name('onboarding');

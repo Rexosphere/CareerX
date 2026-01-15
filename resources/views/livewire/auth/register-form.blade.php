@@ -7,7 +7,7 @@ new class extends Component {
     #[Validate('required|min:3')]
     public string $name = '';
 
-    #[Validate('required|email|ends_with:@uom.lk|unique:users')]
+    #[Validate('required|email|unique:users')]
     public string $email = '';
 
     #[Validate('required|min:8')]
@@ -27,7 +27,6 @@ new class extends Component {
         ]);
 
         // Assign student role by default
-        // Assign student role by default
         $studentRole = \App\Models\Role::firstOrCreate(
             ['name' => 'student'],
             ['display_name' => 'Student']
@@ -36,7 +35,11 @@ new class extends Component {
         $user->roles()->attach($studentRole);
 
         auth()->login($user);
-        $this->redirectRoute('onboarding');
+        
+        // Send email verification notification
+        $user->sendEmailVerificationNotification();
+        
+        $this->redirectRoute('verification.notice');
     }
 }; ?>
 
@@ -51,7 +54,7 @@ new class extends Component {
                 Create Account
             </h2>
             <p class="text-base-content/60 text-sm">
-                Join the exclusive platform for University of Moratuwa
+                Join our exclusive career platform
             </p>
         </div>
 
@@ -72,10 +75,10 @@ new class extends Component {
 
             <!-- Email -->
             <div class="form-control">
-                <x-input label="University Email" wire:model="email" icon="o-envelope" placeholder="index@uom.lk"
+                <x-input label="Email Address" wire:model="email" icon="o-envelope" placeholder="your.email@example.com"
                     type="email" class=" input-bordered focus:border-primary focus:ring-primary w-full" />
                 <label class="label py-0 pt-1">
-                    <span class="label-text-alt text-base-content/50">Must be a valid @uom.lk email address</span>
+                    <span class="label-text-alt text-base-content/50">You'll need to verify this email address</span>
                 </label>
             </div>
 

@@ -11,9 +11,6 @@ new class extends Component {
     public int $totalSteps = 2;
 
     // Step 1 fields
-    #[Validate('required|string|max:255')]
-    public string $full_name = '';
-
     #[Validate('required|string|max:20')]
     public string $student_id = '';
 
@@ -53,7 +50,6 @@ new class extends Component {
     {
         if ($this->currentStep === 1) {
             $this->validate([
-                'full_name' => 'required|string|max:255',
                 'student_id' => 'required|string|max:20',
                 'department' => 'required|string',
             ]);
@@ -106,11 +102,6 @@ new class extends Component {
             ]
         );
 
-        // Update user's full name if provided
-        auth()->user()->update([
-            'name' => $this->full_name,
-        ]);
-
         session()->flash('message', 'Profile setup completed successfully!');
 
         $this->redirect(route('home'));
@@ -159,18 +150,9 @@ new class extends Component {
         <!-- Step 1: Personal Details -->
         @if ($currentStep === 1)
             <form wire:submit="nextStep" class="space-y-4">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <!-- Full Name (2/3 width) -->
-                    <div class="md:col-span-2">
-                        <x-input label="Full Name" wire:model="full_name" icon="o-user" placeholder="e.g. Chamara Silva" />
-                    </div>
-
-                    <!-- Student ID (1/3 width) -->
-                    <div>
-                        <x-input label="Student ID" wire:model="student_id" icon="o-identification"
-                            placeholder="e.g. 190000X" class="uppercase" />
-                    </div>
-                </div>
+                <!-- Student ID -->
+                <x-input label="Student ID" wire:model="student_id" icon="o-identification"
+                    placeholder="e.g. 190000X" class="uppercase" />
 
                 <!-- Department -->
                 <x-select label="Department" wire:model="department" icon="o-academic-cap" :options="[
