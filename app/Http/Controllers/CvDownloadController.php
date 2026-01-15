@@ -102,7 +102,7 @@ class CvDownloadController extends Controller
      * Download all CVs for a job posting as a zip file
      * Only accessible by the company that owns the job posting
      */
-    public function downloadBulkCvs(int $jobId): Response
+    public function downloadBulkCvs(int $jobId): \Symfony\Component\HttpFoundation\BinaryFileResponse
     {
         $job = \App\Models\JobPosting::with(['applications.student'])->findOrFail($jobId);
 
