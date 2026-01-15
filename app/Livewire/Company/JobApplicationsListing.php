@@ -22,7 +22,7 @@ class JobApplicationsListing extends Component
         $job = JobPosting::with(['applications.student'])->findOrFail($this->jobId);
 
         // Ensure company owns this job
-        if ($job->company_id !== auth('company')->id()) {
+        if ($job->company_id != auth('company')->id()) {
             abort(403);
         }
 
