@@ -20,10 +20,10 @@ new class extends Component {
             <!-- <div class="badge badge-primary badge-lg mb-4 backdrop-blur-sm bg-primary/80">
                 University of Moratuwa
             </div> -->
-            <h1 class="text-5xl md:text-6xl font-bold text-base-content mb-6">
+            <h1 class="text-5xl md:text-6xl font-bold text-white mb-6">
                 Connect with Future <span class="text-primary font-extrabold">Innovators</span>
             </h1>
-            <p class="text-lg md:text-xl text-base-content/80 mb-8">
+            <p class="text-lg md:text-xl text-white/90 mb-8">
                 The official bridge between University of Moratuwa's top engineering talent and the industry's leading
                 opportunities.
             </p>
@@ -37,7 +37,7 @@ new class extends Component {
                 <a href="{{ route('students.index') }}" class="btn btn-lg btn-primary px-8 rounded-lg"
                     wire:navigate>Find Talent</a>
                 <a href="{{ route('jobs.index') }}"
-                    class="btn btn-lg btn-outline px-8 rounded-lg hover:border-white hover:bg-black/20"
+                    class="btn btn-lg btn-outline px-8 rounded-lg text-white border-white hover:bg-white hover:text-base-content"
                     wire:navigate>Search Jobs</a>
             </div>
         </div>
