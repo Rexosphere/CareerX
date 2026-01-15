@@ -6,9 +6,11 @@ use App\Models\Course;
 use App\Models\User;
 use App\Models\Company;
 use App\Models\JobPosting;
+use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithPagination;
 
+#[Title('Admin Dashboard - CareerX')]
 class Dashboard extends Component
 {
     use WithPagination;
