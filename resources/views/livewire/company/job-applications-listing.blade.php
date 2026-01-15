@@ -35,7 +35,7 @@
                                         </div>
                                     </div>
                                     <div>
-                                        <div class="font-bold">{{ $application->student->name }}</div>
+                                        <a href="{{ route('students.profile', $application->student->id) }}" class="font-bold hover:underline text-primary" target="_blank">{{ $application->student->name }}</a>
                                         <div class="text-xs opacity-60">{{ $application->student->email }}</div>
                                     </div>
                                 </div>

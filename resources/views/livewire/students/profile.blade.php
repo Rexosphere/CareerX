@@ -17,20 +17,15 @@ new class extends Component {
 
         // Check if current user can access CV
         $canAccessCv = false;
-        if (auth()->check()) {
-            // Allow if viewing own profile
-            if (auth()->id() === $this->studentId) {
-                $canAccessCv = true;
-            }
-            // Allow if company has received application from this student
-            elseif (auth('company')->check()) {
-                $companyId = auth('company')->id();
-                $canAccessCv = \App\Models\Application::whereHas('jobPosting', function ($query) use ($companyId) {
-                    $query->where('company_id', $companyId);
-                })
-                ->where('student_id', $this->studentId)
-                ->exists();
-            }
+        if (auth()->check() && auth()->id() === $this->studentId) {
+            $canAccessCv = true;
+        } elseif (auth('company')->check()) {
+            $companyId = auth('company')->id();
+            $canAccessCv = \App\Models\Application::whereHas('jobPosting', function ($query) use ($companyId) {
+                $query->where('company_id', $companyId);
+            })
+            ->where('student_id', $this->studentId)
+            ->exists();
         }
 
         return [
