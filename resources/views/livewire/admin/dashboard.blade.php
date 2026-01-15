@@ -8,6 +8,7 @@
                 @elseif($activeTab === 'courses') Course Management
                 @elseif($activeTab === 'jobs') Job Postings
                 @elseif($activeTab === 'students') Student Directory
+                @elseif($activeTab === 'blogs') Blog Articles
                 @endif
             </h1>
             <p class="text-base-content/60 mt-1">
@@ -16,6 +17,7 @@
                 @elseif($activeTab === 'courses') Create and manage educational content.
                 @elseif($activeTab === 'jobs') Monitor and moderate active job listings.
                 @elseif($activeTab === 'students') View and manage registered students.
+                @elseif($activeTab === 'blogs') Create and publish blog articles.
                 @endif
             </p>
         </div>
@@ -106,6 +108,21 @@
                                 <div class="stat-title font-medium">Job Listings</div>
                                 <div class="stat-value text-3xl">{{ $stats['total_jobs'] }}</div>
                                 <div class="stat-desc mt-1">Active postings</div>
+                            </div>
+                        </div>
+
+                        {{-- Blog Articles --}}
+                        <div class="stats shadow-sm border border-base-200 bg-base-100/50 hover:border-success/30 transition-all cursor-pointer group"
+                            wire:click="setTab('blogs')">
+                            <div class="stat">
+                                <div
+                                    class="stat-figure text-success bg-success/10 p-3 rounded-2xl group-hover:scale-110 transition-transform">
+                                    <x-icon name="o-document-text" class="w-7 h-7" />
+                                </div>
+                                <div class="stat-title font-medium">Blog Articles</div>
+                                <div class="stat-value text-3xl">{{ $stats['total_blogs'] }}</div>
+                                <div class="stat-desc mt-1 text-success font-bold">{{ $stats['published_blogs'] }}
+                                    Published</div>
                             </div>
                         </div>
                     </div>
@@ -583,4 +600,7 @@
             @endif
         </div>
     </div>
+
+    {{-- Include Blog Management Section --}}
+    @include('livewire.admin.blog-section')
 </div>
