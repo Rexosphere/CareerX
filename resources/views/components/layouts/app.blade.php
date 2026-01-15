@@ -14,30 +14,7 @@
     </main>
 
     {{-- Footer --}}
-    <footer class="bg-base-100 border-t border-base-300 py-10">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                <div class="flex flex-col gap-2">
-                    <div class="flex items-center gap-2">
-                        <div class="w-10 h-10 text-primary flex items-center justify-center">
-                            <x-icon name="o-academic-cap" class="w-10 h-10" />
-                        </div>
-                        <span class="text-lg font-bold">CareerX</span>
-                    </div>
-                    <p class="text-sm text-base-content/70">
-                        Connecting future leaders from University of Moratuwa with top industries.
-                    </p>
-                </div>
-
-                <div class="flex flex-wrap gap-8 text-sm font-medium text-base-content/70">
-                    <a class="link link-hover hover:text-primary" href="#">Privacy Policy</a>
-                    <a class="link link-hover hover:text-primary" href="#">Terms of Service</a>
-                    <a class="link link-hover hover:text-primary" href="#">Support</a>
-                    <span class="text-base-content/40">© {{ date('Y') }} University of Moratuwa</span>
-                </div>
-            </div>
-        </div>
-    </footer>
+    <x-footer />
 
     {{-- TOAST area --}}
     <x-toast />
