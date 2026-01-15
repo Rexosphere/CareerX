@@ -1,9 +1,7 @@
 @volt('verify-email')
 <?php
 
-use Livewire\Volt\Component;
-
-new class extends Component {
+new class extends \Livewire\Volt\Component {
     public $status = '';
     
     public function resendVerification(): void

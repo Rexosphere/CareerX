@@ -26,6 +26,10 @@ class FortifyServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Prevent Fortify from automatically registering routes
+        // We'll use custom routes in web.php to avoid conflicts
+        Fortify::ignoreRoutes();
+        
         $this->configureActions();
         $this->configureViews();
         $this->configureRateLimiting();

@@ -5,6 +5,12 @@ use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\ApplicantController;
 use App\Livewire\Admin\Dashboard as AdminDashboard;
+use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
+use Laravel\Fortify\Http\Controllers\RegisteredUserController;
+use Laravel\Fortify\Http\Controllers\PasswordResetLinkController;
+use Laravel\Fortify\Http\Controllers\NewPasswordController;
+use Laravel\Fortify\Http\Controllers\EmailVerificationNotificationController;
+use Laravel\Fortify\Http\Controllers\VerifyEmailController;
 
 // Public Routes
 Route::get('/', function () {
@@ -72,6 +78,21 @@ Route::get('/admin/login', function () {
     return view('pages.auth.admin-login');
 })->name('admin.login');
 
+// Fortify Authentication Routes (manually registered to avoid conflicts)
+Route::post('/login', [AuthenticatedSessionController::class, 'store'])
+    ->middleware(['guest:web']);
+
+Route::post('/register', [RegisteredUserController::class, 'store'])
+    ->middleware(['guest:web']);
+
+Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])
+    ->middleware(['guest:web'])
+    ->name('password.email');
+
+Route::post('/reset-password', [NewPasswordController::class, 'store'])
+    ->middleware(['guest:web'])
+    ->name('password.update');
+
 // Admin Routes
 Route::middleware(['auth:admin'])->group(function () {
     Route::get('/admin/dashboard', AdminDashboard::class)->name('admin.dashboard');
@@ -109,6 +130,14 @@ Route::middleware(['auth:company'])->group(function () {
 Route::get('/email/verify', function () {
     return view('pages.auth.verify-email');
 })->middleware('auth')->name('verification.notice');
+
+Route::get('/email/verify/{id}/{hash}', [VerifyEmailController::class, '__invoke'])
+    ->middleware(['auth', 'signed', 'throttle:6,1'])
+    ->name('verification.verify');
+
+Route::post('/email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
+    ->middleware(['auth', 'throttle:6,1'])
+    ->name('verification.send');
 
 // CV Download Routes (Protected)
 Route::middleware(['auth'])->group(function () {
