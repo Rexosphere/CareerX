@@ -13,7 +13,7 @@
 
 pest()->extend(Tests\TestCase::class)
     ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
-    ->in('Feature');
+    ->in('Feature', 'Unit');
 
 /*
 |--------------------------------------------------------------------------
@@ -41,7 +41,41 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+/**
+ * Create and authenticate a student user
+ */
+function createStudent(array $attributes = []): App\Models\User
 {
-    // ..
+    return App\Models\User::factory()->create($attributes);
 }
+
+/**
+ * Create and authenticate a verified student user
+ */
+function createVerifiedStudent(array $attributes = []): App\Models\User
+{
+    return App\Models\User::factory()->create(array_merge([
+        'email_verified_at' => now(),
+    ], $attributes));
+}
+
+/**
+ * Create and authenticate a company
+ */
+function createCompany(array $attributes = []): App\Models\Company
+{
+    return App\Models\Company::factory()->create($attributes);
+}
+
+/**
+ * Create a job posting for a company
+ */
+function createJobPosting(?App\Models\Company $company = null, array $attributes = []): App\Models\JobPosting
+{
+    $company = $company ?? createCompany();
+    
+    return App\Models\JobPosting::factory()->create(array_merge([
+        'company_id' => $company->id,
+    ], $attributes));
+}
+

@@ -47,6 +47,10 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="manifest" href="/site.webmanifest">
     
+    {{-- EasyMDE Markdown Editor (for admin blog management) --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+    
     {{-- Assets --}}
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')

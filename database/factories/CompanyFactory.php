@@ -24,7 +24,7 @@ class CompanyFactory extends Factory
             'password' => Hash::make('password'),
             'logo_path' => 'https://via.placeholder.com/200?text=' . urlencode(substr($name, 0, 12)),
             'description' => fake()->paragraphs(2, true),
-            'status' => fake()->randomElement(['pending', 'active', 'rejected']),
+            'status' => 'active', // Active by default for tests
             'verification_token' => null,
             'verified_at' => now()->subDays(fake()->numberBetween(0, 400)),
         ];
