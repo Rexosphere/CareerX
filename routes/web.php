@@ -108,6 +108,14 @@ Route::middleware(['auth:admin'])->group(function () {
 
 // Company Routes
 Route::middleware(['auth:company'])->group(function () {
+    // Route for pending approval page (accessible without approval)
+    Route::get('/company/pending', function () {
+        return view('pages.company.pending');
+    })->name('company.pending');
+});
+
+// Company Routes requiring approval
+Route::middleware(['auth:company', \App\Http\Middleware\EnsureCompanyIsApproved::class])->group(function () {
     Route::get('/company/profile', [CompanyController::class, 'profile'])->name('company.profile');
     Route::get('/jobs/create', function () {
         return view('pages.jobs.create');

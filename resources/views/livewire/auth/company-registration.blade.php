@@ -28,12 +28,20 @@ new class extends Component {
             'name' => $this->name,
             'email' => $this->email,
             'password' => Hash::make($this->password),
-            'status' => 'active',
+            'status' => 'pending',
         ]);
 
-        auth('company')->login($company);
+        // Send notification to company
+        $company->notify(new \App\Notifications\CompanyRegistered());
 
-        $this->redirectRoute('company.dashboard', navigate: true);
+        // Send notification to all admins
+        $admins = \App\Models\Admin::all();
+        foreach ($admins as $admin) {
+            $admin->notify(new \App\Notifications\NewCompanyRegistered($company));
+        }
+
+        // Show pending approval message instead of logging in
+        $this->registered = true;
     }
 }; ?>
 

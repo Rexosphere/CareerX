@@ -99,6 +99,10 @@ class Dashboard extends Component
     {
         $company = Company::findOrFail($companyId);
         $company->update(['status' => 'active']);
+        
+        // Send approval notification to company
+        $company->notify(new \App\Notifications\CompanyApproved());
+        
         session()->flash('message', "Company {$company->name} has been approved.");
         $this->refreshStats();
     }
@@ -107,6 +111,10 @@ class Dashboard extends Component
     {
         $company = Company::findOrFail($companyId);
         $company->update(['status' => 'rejected']);
+        
+        // Send rejection notification to company
+        $company->notify(new \App\Notifications\CompanyRejected());
+        
         session()->flash('message', "Company {$company->name} has been rejected.");
         $this->refreshStats();
     }

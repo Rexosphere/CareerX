@@ -49,6 +49,36 @@ return [
             'local_domain' => env('MAIL_EHLO_DOMAIN', parse_url((string) env('APP_URL', 'http://localhost'), PHP_URL_HOST)),
         ],
 
+        'noreply' => [
+            'transport' => 'smtp',
+            'host' => env('MAIL_HOST', '127.0.0.1'),
+            'port' => env('MAIL_PORT', 2525),
+            'username' => env('MAIL_NOREPLY_USERNAME'),
+            'password' => env('MAIL_NOREPLY_PASSWORD'),
+            'encryption' => env('MAIL_ENCRYPTION'),
+            'timeout' => null,
+        ],
+
+        'support' => [
+            'transport' => 'smtp',
+            'host' => env('MAIL_HOST', '127.0.0.1'),
+            'port' => env('MAIL_PORT', 2525),
+            'username' => env('MAIL_SUPPORT_USERNAME'),
+            'password' => env('MAIL_SUPPORT_PASSWORD'),
+            'encryption' => env('MAIL_ENCRYPTION'),
+            'timeout' => null,
+        ],
+
+        'admin' => [
+            'transport' => 'smtp',
+            'host' => env('MAIL_HOST', '127.0.0.1'),
+            'port' => env('MAIL_PORT', 2525),
+            'username' => env('MAIL_ADMIN_USERNAME'),
+            'password' => env('MAIL_ADMIN_PASSWORD'),
+            'encryption' => env('MAIL_ENCRYPTION'),
+            'timeout' => null,
+        ],
+
         'ses' => [
             'transport' => 'ses',
         ],
@@ -113,6 +143,20 @@ return [
     'from' => [
         'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
         'name' => env('MAIL_FROM_NAME', 'Example'),
+        
+        // Additional sender addresses for different contexts
+        'noreply' => [
+            'address' => env('MAIL_FROM_NOREPLY', 'noreply@careerx.com'),
+            'name' => env('MAIL_FROM_NAME', 'CareerX'),
+        ],
+        'support' => [
+            'address' => env('MAIL_FROM_SUPPORT', 'support@careerx.com'),
+            'name' => env('MAIL_FROM_NAME', 'CareerX Support'),
+        ],
+        'admin' => [
+            'address' => env('MAIL_FROM_ADMIN', 'admin@careerx.com'),
+            'name' => env('MAIL_FROM_NAME', 'CareerX Admin'),
+        ],
     ],
 
 ];

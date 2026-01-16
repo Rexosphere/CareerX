@@ -17,6 +17,39 @@ class JobApplicationsListing extends Component
         $this->jobId = $jobId;
     }
 
+    public function updateApplicationStatus($applicationId, $newStatus)
+    {
+        // Validate status
+        $validStatuses = ['pending', 'reviewed', 'shortlisted', 'rejected', 'accepted'];
+        if (!in_array($newStatus, $validStatuses)) {
+            session()->flash('error', 'Invalid status provided.');
+            return;
+        }
+
+        $application = \App\Models\Application::findOrFail($applicationId);
+        
+        // Ensure this application belongs to a job owned by this company
+        if ($application->jobPosting->company_id != auth('company')->id()) {
+            abort(403);
+        }
+
+        $oldStatus = $application->status;
+        
+        // Update status
+        $application->update(['status' => $newStatus]);
+        
+        // Send notification to student if status changed
+        if ($oldStatus !== $newStatus) {
+            $application->student->notify(new \App\Notifications\ApplicationStatusChanged(
+                $application,
+                $oldStatus,
+                $newStatus
+            ));
+        }
+        
+        session()->flash('message', 'Application status updated successfully.');
+    }
+
     public function render()
     {
         $job = JobPosting::with(['applications.student'])->findOrFail($this->jobId);
