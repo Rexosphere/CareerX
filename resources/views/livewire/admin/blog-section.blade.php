@@ -162,17 +162,17 @@
                                 </div>
 
                                 {{-- Content (EasyMDE Markdown Editor) --}}
-                                <div class="form-control items-start" wire:ignore>
-                                    <label class="label mb-2">
-                                        <span class="label-text font-bold text-base-content/80 flex items-center gap-2">
-                                            <x-icon name="o-document-text" class="w-4 h-4 text-primary" />
-                                            Content (Markdown)
-                                        </span>
-                                    </label>
-                                    <textarea id="blog-content-editor" wire:model="blog_content"></textarea>
-                                    @error('blog_content')
-                                        <span class="text-error text-xs mt-1 font-medium">{{ $message }}</span>
-                                    @enderror
+                                <div class="form-control items-start">
+                                    <x-markdown 
+                                        wire:model="blog_content" 
+                                        label="Content (Markdown)"
+                                        hint="Write your blog content here using Markdown..."
+                                        :config="[
+                                            'spellChecker' => false,
+                                            'toolbar' => ['bold', 'italic', 'heading', '|', 'quote', 'unordered-list', 'ordered-list', '|', 'link', 'image', '|', 'preview', 'side-by-side', 'fullscreen', '|', 'guide'],
+                                            'placeholder' => 'Write your blog content here using Markdown...',
+                                        ]"
+                                    />
                                 </div>
 
                                 {{-- Tags (Optional) --}}
@@ -207,47 +207,6 @@
                         </div>
                     </div>
                 </div>
-
-                {{-- EasyMDE Initialization Script --}}
-                <script>
-                    document.addEventListener('livewire:init', () => {
-                        let easyMDE = null;
-                        
-                        function initializeEditor() {
-                            const editor = document.getElementById('blog-content-editor');
-                            if (editor && !easyMDE) {
-                                easyMDE = new EasyMDE({
-                                    element: editor,
-                                    spellChecker: false,
-                                    placeholder: 'Write your blog content here using Markdown...',
-                                    toolbar: ['bold', 'italic', 'heading', '|', 'quote', 'unordered-list', 'ordered-list', '|', 'link', 'image', '|', 'preview', 'side-by-side', 'fullscreen', '|', 'guide'],
-                                    autosave: {
-                                        enabled: true,
-                                        uniqueId: 'blog-content',
-                                        delay: 1000,
-                                    },
-                                    initialValue: @this.blog_content || '',
-                                });
-                                
-                                easyMDE.codemirror.on('change', () => {
-                                    @this.set('blog_content', easyMDE.value());
-                                });
-                            }
-                        }
-                        
-                        // Initialize on load
-                        setTimeout(initializeEditor, 100);
-                        
-                        // Reinitialize when sub-tab changes
-                        Livewire.on('blog-form-loaded', () => {
-                            if (easyMDE) {
-                                easyMDE.toTextArea();
-                                easyMDE = null;
-                            }
-                            setTimeout(initializeEditor, 100);
-                        });
-                    });
-                </script>
 
             @else
                 {{-- Blog List Section --}}
