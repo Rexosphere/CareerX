@@ -93,6 +93,10 @@ Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])
     ->middleware(['guest:web'])
     ->name('password.email');
 
+Route::get('/reset-password/{token}', function ($token) {
+    return view('livewire.auth.reset-password', ['token' => $token]);
+})->middleware(['guest:web'])->name('password.reset');
+
 Route::post('/reset-password', [NewPasswordController::class, 'store'])
     ->middleware(['guest:web'])
     ->name('password.update');
