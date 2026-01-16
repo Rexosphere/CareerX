@@ -108,7 +108,7 @@ new class extends Component {
 
             {{-- Article Body --}}
             <div class="card-body p-6 sm:p-10">
-                <div class="prose prose-lg max-w-none">
+                <div id="mainarticle" class="prose prose-lg max-w-none">
                     {!! $parsedContent !!}
                 </div>
 
