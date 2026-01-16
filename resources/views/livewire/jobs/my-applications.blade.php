@@ -18,7 +18,9 @@ new class extends Component {
             return;
         }
 
-        $query = auth('web')->user()->applications()->with('jobPosting');
+        $query = auth('web')->user()->applications()->with(['jobPosting' => function($query) {
+            $query->withTrashed(); // Include soft-deleted jobs
+        }]);
 
         // Status filter
         if ($this->statusFilter !== 'all') {
@@ -40,8 +42,22 @@ new class extends Component {
             ->map(function ($application) {
                 $job = $application->jobPosting;
                 
+                // Handle completely missing jobs (hard deleted)
                 if (!$job) {
-                    return null;
+                    return [
+                        'id' => $application->id,
+                        'job_id' => null,
+                        'title' => 'Job Posting Removed',
+                        'company' => 'N/A',
+                        'location' => 'N/A',
+                        'type' => 'N/A',
+                        'logo' => 'https://ui-avatars.com/api/?name=Deleted&background=ef4444&color=fff',
+                        'status' => $application->status,
+                        'applied_at' => $application->created_at->format('M d, Y'),
+                        'applied_days_ago' => (int) $application->created_at->diffInDays(),
+                        'cover_letter' => $application->cover_letter,
+                        'job_deleted' => true,
+                    ];
                 }
 
                 // Get company logo
@@ -66,9 +82,9 @@ new class extends Component {
                     'applied_at' => $application->created_at->format('M d, Y'),
                     'applied_days_ago' => (int) $application->created_at->diffInDays(),
                     'cover_letter' => $application->cover_letter,
+                    'job_deleted' => $job->trashed(), // Check if soft deleted
                 ];
             })
-            ->filter()
             ->values()
             ->toArray();
     }
@@ -164,26 +180,38 @@ new class extends Component {
     <div class="space-y-4">
         @forelse($applications as $app)
             <div wire:key="application-{{ $app['id'] }}"
-                class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-all duration-300">
+                class="card border shadow-sm hover:shadow-md transition-all duration-300 {{ $app['job_deleted'] ? 'bg-base-200 border-error/30' : 'bg-base-100 border-base-300' }}">
                 <div class="card-body p-5">
                     <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
                         <!-- Left: Job Info -->
                         <div class="flex gap-4 flex-1">
                             <div class="w-12 h-12 rounded-lg bg-base-200 border border-base-300 flex items-center justify-center overflow-hidden flex-shrink-0">
                                 <img src="{{ $app['logo'] }}" alt="{{ $app['company'] }} Logo"
-                                    class="w-full h-full object-cover" />
+                                    class="w-full h-full object-cover {{ $app['job_deleted'] ? 'grayscale' : '' }}" />
                             </div>
                             <div class="flex-1 min-w-0">
-                                <h3 class="text-lg font-bold mb-1">{{ $app['title'] }}</h3>
+                                <div class="flex items-center gap-2 mb-1">
+                                    <h3 class="text-lg font-bold {{ $app['job_deleted'] ? 'text-base-content/40' : '' }}">
+                                        {{ $app['title'] }}
+                                    </h3>
+                                    @if($app['job_deleted'])
+                                        <span class="badge badge-error badge-xs gap-1">
+                                            <x-icon name="o-x-circle" class="w-3 h-3" />
+                                            Not Available
+                                        </span>
+                                    @endif
+                                </div>
                                 <p class="text-sm font-medium text-base-content/70 mb-3">
                                     {{ $app['company'] }}
                                 </p>
                                 <div class="flex flex-wrap gap-2 mb-3">
-                                    <span class="badge badge-sm">{{ $app['type'] }}</span>
-                                    <span class="badge badge-sm badge-ghost">
-                                        <x-icon name="o-map-pin" class="w-3 h-3 mr-1" />
-                                        {{ $app['location'] }}
-                                    </span>
+                                    @if(!$app['job_deleted'])
+                                        <span class="badge badge-sm">{{ $app['type'] }}</span>
+                                        <span class="badge badge-sm badge-ghost">
+                                            <x-icon name="o-map-pin" class="w-3 h-3 mr-1" />
+                                            {{ $app['location'] }}
+                                        </span>
+                                    @endif
                                     <span class="badge badge-sm {{ $this->getStatusBadgeClass($app['status']) }}">
                                         {{ ucfirst($app['status']) }}
                                     </span>
@@ -197,11 +225,19 @@ new class extends Component {
 
                         <!-- Right: Actions -->
                         <div class="flex flex-col gap-2 lg:items-end">
-                            <a href="{{ route('jobs.index') }}" 
-                                class="btn btn-outline btn-sm gap-2">
-                                <x-icon name="o-eye" class="w-4 h-4" />
-                                View Job
-                            </a>
+                            @if(!$app['job_deleted'])
+                                <a href="{{ route('jobs.index') }}" 
+                                    class="btn btn-outline btn-sm gap-2">
+                                    <x-icon name="o-eye" class="w-4 h-4" />
+                                    View Job
+                                </a>
+                            @else
+                                <button disabled class="btn btn-outline btn-sm gap-2 opacity-50 cursor-not-allowed">
+                                    <x-icon name="o-x-circle" class="w-4 h-4" />
+                                    Job Removed
+                                </button>
+                            @endif
+                            
                             @if($app['cover_letter'])
                                 <button class="btn btn-ghost btn-sm gap-2"
                                     onclick="document.getElementById('cover-letter-{{ $app['id'] }}').showModal()">
