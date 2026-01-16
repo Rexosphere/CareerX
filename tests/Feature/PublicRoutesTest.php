@@ -39,6 +39,21 @@ test('blog index page can be accessed', function () {
 });
 
 test('blog detail page can be accessed with slug', function () {
+    // Create author first for foreign key
+    $author = createStudent();
+    
+    // Create a blog post for the test
+    App\Models\Blog::create([
+        'author_id' => $author->id,
+        'title' => 'Test Blog Post',
+        'slug' => 'test-slug',
+        'excerpt' => 'Test excerpt',
+        'content' => 'Test content',
+        'category' => 'Technology',
+        'status' => 'published',
+        'published_at' => now(),
+    ]);
+    
     $response = $this->get(route('blog.show', ['slug' => 'test-slug']));
     
     $response->assertStatus(200);

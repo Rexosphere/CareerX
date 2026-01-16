@@ -81,3 +81,18 @@ function createJobPosting(?App\Models\Company $company = null, array $attributes
     ], $attributes));
 }
 
+/**
+ * Create a student with profile including CV
+ */
+function createStudentWithCv(array $attributes = [], string $cvPath = 'cv/test.pdf'): App\Models\User
+{
+    $student = createStudent($attributes);
+    
+    App\Models\StudentProfile::factory()->create([
+        'user_id' => $student->id,
+        'cv_path' => $cvPath,
+    ]);
+    
+    return $student->fresh('studentProfile');
+}
+

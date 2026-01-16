@@ -18,8 +18,8 @@ test('job posting has applications relationship', function () {
 });
 
 test('active scope returns only active job postings', function () {
-    createJobPosting(['is_active' => true, 'title' => 'Active Job']);
-    createJobPosting(['is_active' => false, 'title' => 'Inactive Job']);
+    createJobPosting(null, ['is_active' => true, 'title' => 'Active Job']);
+    createJobPosting(null, ['is_active' => false, 'title' => 'Inactive Job']);
     
     $activeJobs = JobPosting::active()->get();
     
@@ -28,8 +28,8 @@ test('active scope returns only active job postings', function () {
 });
 
 test('open scope returns active jobs without deadline', function () {
-    createJobPosting(['is_active' => true, 'application_deadline' => null]);
-    createJobPosting(['is_active' => false, 'application_deadline' => null]);
+    createJobPosting(null, ['is_active' => true, 'application_deadline' => null]);
+    createJobPosting(null, ['is_active' => false, 'application_deadline' => null]);
     
     $openJobs = JobPosting::open()->get();
     
@@ -37,8 +37,8 @@ test('open scope returns active jobs without deadline', function () {
 });
 
 test('open scope returns active jobs with future deadline', function () {
-    createJobPosting(['is_active' => true, 'application_deadline' => now()->addDays(7)]);
-    createJobPosting(['is_active' => true, 'application_deadline' => now()->subDays(7)]);
+    createJobPosting(null, ['is_active' => true, 'application_deadline' => now()->addDays(7)]);
+    createJobPosting(null, ['is_active' => true, 'application_deadline' => now()->subDays(7)]);
     
     $openJobs = JobPosting::open()->get();
     
@@ -46,25 +46,25 @@ test('open scope returns active jobs with future deadline', function () {
 });
 
 test('isOpen returns true when job is active with no deadline', function () {
-    $job = createJobPosting(['is_active' => true, 'application_deadline' => null]);
+    $job = createJobPosting(null, ['is_active' => true, 'application_deadline' => null]);
     
     expect($job->isOpen())->toBeTrue();
 });
 
 test('isOpen returns true when job is active with future deadline', function () {
-    $job = createJobPosting(['is_active' => true, 'application_deadline' => now()->addDays(7)]);
+    $job = createJobPosting(null, ['is_active' => true, 'application_deadline' => now()->addDays(7)]);
     
     expect($job->isOpen())->toBeTrue();
 });
 
 test('isOpen returns false when job is inactive', function () {
-    $job = createJobPosting(['is_active' => false, 'application_deadline' => now()->addDays(7)]);
+    $job = createJobPosting(null, ['is_active' => false, 'application_deadline' => now()->addDays(7)]);
     
     expect($job->isOpen())->toBeFalse();
 });
 
 test('isOpen returns false when deadline has passed', function () {
-    $job = createJobPosting(['is_active' => true, 'application_deadline' => now()->subDays(1)]);
+    $job = createJobPosting(null, ['is_active' => true, 'application_deadline' => now()->subDays(1)]);
     
     expect($job->isOpen())->toBeFalse();
 });
@@ -137,14 +137,14 @@ test('job posting supports soft deletes', function () {
 });
 
 test('requirements are cast to array', function () {
-    $job = createJobPosting(['requirements' => ['PHP', 'Laravel', 'MySQL']]);
+    $job = createJobPosting(null, ['requirements' => ['PHP', 'Laravel', 'MySQL']]);
     
     expect($job->requirements)->toBeArray();
     expect($job->requirements)->toBe(['PHP', 'Laravel', 'MySQL']);
 });
 
 test('application_deadline is cast to date', function () {
-    $job = createJobPosting(['application_deadline' => '2026-12-31']);
+    $job = createJobPosting(null, ['application_deadline' => '2026-12-31']);
     
     expect($job->application_deadline)->toBeInstanceOf(\Illuminate\Support\Carbon::class);
 });

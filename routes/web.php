@@ -64,11 +64,11 @@ Route::get('/contact', function () {
 // Auth Login Routes
 Route::get('/register', function () {
     return view('pages.auth.register');
-})->name('register');
+})->middleware('guest')->name('register');
 
 Route::get('/login', function () {
     return view('pages.auth.login');
-})->name('login');
+})->middleware('guest')->name('login');
 
 Route::get('/company-login', function () {
     return view('pages.auth.company-login');

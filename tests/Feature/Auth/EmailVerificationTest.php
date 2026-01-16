@@ -19,7 +19,6 @@ test('verified users are redirected from verification notice', function () {
     
     $response = $this->actingAs($user)->get(route('verification.notice'));
     
-    // Verified users might be redirected away or see the page
-    // The exact behavior depends on your middleware configuration
-    $response->assertStatus(200);
+    // Verified users are redirected by the Livewire component's mount() method
+    $response->assertRedirect(route('home'));
 });
