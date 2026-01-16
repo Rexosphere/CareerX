@@ -249,10 +249,10 @@ new class extends Component {
                 <div class="collapse-content">
                     <div class="space-y-3">
                         @php
-                            $jobTypeOptions = ['Full Time', 'Part Time', 'Internship', 'Contract', 'Remote'];
+                            $jobTypeOptions = ['Full-time', 'Part-time', 'Internship', 'Contract', 'Remote'];
                         @endphp
                         @foreach($jobTypeOptions as $type)
-                            @if(isset($jobTypeCounts[$type]) || in_array($type, ['Full Time', 'Part Time', 'Internship']))
+                            @if(isset($jobTypeCounts[$type]) || in_array($type, ['Full-time', 'Part-time', 'Internship']))
                                 <label class="label cursor-pointer justify-start gap-3 py-1">
                                     <input wire:model.live="jobTypes" type="checkbox" value="{{ $type }}"
                                         class="checkbox checkbox-sm checkbox-primary" />
