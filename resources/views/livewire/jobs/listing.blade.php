@@ -20,6 +20,7 @@ new class extends Component {
     public int $perPage = 10;
     public array $savedJobIds = [];
     public array $appliedJobIds = [];
+    public bool $showSavedOnly = false;
 
     public function mount(): void
     {
@@ -61,6 +62,11 @@ new class extends Component {
         // Location filter (from homepage search bar)
         if (!empty($this->location)) {
             $query->where('location', 'like', '%' . $this->location . '%');
+        }
+
+        // Saved jobs filter
+        if ($this->showSavedOnly && !empty($this->savedJobIds)) {
+            $query->whereIn('id', $this->savedJobIds);
         }
 
         // Job type filter (checkboxes)
@@ -137,6 +143,7 @@ new class extends Component {
         $this->jobTypes = [];
         $this->salaryMin = 0;
         $this->industries = [];
+        $this->showSavedOnly = false;
     }
 
     public function loadMore(): void
@@ -225,6 +232,8 @@ new class extends Component {
 <div class="flex flex-col lg:flex-row gap-8">
     <!-- Left Sidebar: Filters -->
     <aside class="w-full lg:w-72 flex-shrink-0 space-y-6">
+
+
         <!-- Search Filter -->
         <div class="card bg-base-100 border border-base-300 shadow-sm">
             <div class="card-body p-4">
@@ -239,6 +248,30 @@ new class extends Component {
                 </label>
             </div>
         </div>
+
+        <!-- My Favorites Filter -->
+        @auth('web')
+            @if(auth('web')->user()->isStudent())
+                <div class="card bg-base-100 border border-base-300 shadow-sm">
+                    <div class="card-body p-4">
+                        <label class="label cursor-pointer justify-start gap-3 py-1">
+                            <input wire:model.live="showSavedOnly" type="checkbox" 
+                                class="checkbox checkbox-primary" />
+                            <div class="flex flex-col">
+                                <span class="label-text font-bold">My Favorites</span>
+                                <span class="label-text-alt text-base-content/60">Show only saved jobs</span>
+                            </div>
+                        </label>
+                        @if($showSavedOnly && empty($savedJobIds))
+                            <div class="mt-2 p-2 bg-warning/10 border border-warning/20 rounded text-xs text-warning">
+                                <x-icon name="o-information-circle" class="w-4 h-4 inline" />
+                                You haven't saved any jobs yet
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            @endif
+        @endauth
 
         <!-- Filter Accordions -->
         <div class="card bg-base-100 border border-base-300 shadow-sm overflow-hidden">
