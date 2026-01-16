@@ -3,11 +3,14 @@
 namespace App\Notifications;
 
 use App\Models\Application;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class ApplicationStatusChanged extends Notification
+class ApplicationStatusChanged extends Notification implements ShouldQueue
 {
+    use Queueable;
 
     /**
      * Create a new notification instance.

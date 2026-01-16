@@ -3,11 +3,14 @@
 namespace App\Notifications;
 
 use App\Models\Company;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class NewCompanyRegistered extends Notification
+class NewCompanyRegistered extends Notification implements ShouldQueue
 {
+    use Queueable;
 
     /**
      * Create a new notification instance.
