@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Company;
 use App\Models\JobPosting;
 use App\Models\Blog;
+use App\Models\Contact;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
@@ -20,7 +21,7 @@ class Dashboard extends Component
     use WithPagination, WithFileUploads;
 
     public $stats = [];
-    public string $activeTab = 'overview'; // 'overview', 'companies', 'jobs', 'courses', 'students', 'blogs'
+    public string $activeTab = 'overview'; // 'overview', 'companies', 'jobs', 'courses', 'students', 'blogs', 'contacts'
     public string $courseSubTab = 'list'; // 'list', 'form'
     public string $blogSubTab = 'list'; // 'list', 'form', 'edit'
 
@@ -86,6 +87,8 @@ class Dashboard extends Component
             'pending_companies' => Company::where('status', 'pending')->count(),
             'total_blogs' => Blog::count(),
             'published_blogs' => Blog::published()->count(),
+            'total_contacts' => Contact::count(),
+            'unread_contacts' => Contact::where('is_read', false)->count(),
         ];
     }
 
@@ -99,10 +102,10 @@ class Dashboard extends Component
     {
         $company = Company::findOrFail($companyId);
         $company->update(['status' => 'active']);
-        
+
         // Send approval notification to company
         $company->notify(new \App\Notifications\CompanyApproved());
-        
+
         session()->flash('message', "Company {$company->name} has been approved.");
         $this->refreshStats();
     }
@@ -111,10 +114,10 @@ class Dashboard extends Component
     {
         $company = Company::findOrFail($companyId);
         $company->update(['status' => 'rejected']);
-        
+
         // Send rejection notification to company
         $company->notify(new \App\Notifications\CompanyRejected());
-        
+
         session()->flash('message', "Company {$company->name} has been rejected.");
         $this->refreshStats();
     }
@@ -240,7 +243,7 @@ class Dashboard extends Component
     public function editBlog($blogId)
     {
         $blog = Blog::findOrFail($blogId);
-        
+
         $this->blog_id = $blog->id;
         $this->blog_title = $blog->title;
         $this->blog_excerpt = $blog->excerpt;
@@ -250,7 +253,7 @@ class Dashboard extends Component
         $this->blog_status = $blog->status;
         $this->blog_published_at = $blog->published_at?->format('Y-m-d\TH:i');
         $this->existing_cover_image = $blog->featured_image;
-        
+
         $this->blogSubTab = 'edit';
         $this->activeTab = 'blogs';
     }
@@ -297,12 +300,12 @@ class Dashboard extends Component
     public function deleteBlog($blogId)
     {
         $blog = Blog::findOrFail($blogId);
-        
+
         // Delete cover image if exists
         if ($blog->featured_image) {
             Storage::disk('public')->delete($blog->featured_image);
         }
-        
+
         $blog->delete();
         $this->refreshStats();
         session()->flash('message', "Blog article '{$blog->title}' has been deleted.");
@@ -314,6 +317,30 @@ class Dashboard extends Component
         $blog->publish();
         $this->refreshStats();
         session()->flash('message', "Blog article '{$blog->title}' has been published!");
+    }
+
+    public function markAsRead($contactId)
+    {
+        $contact = Contact::findOrFail($contactId);
+        $contact->update(['is_read' => true]);
+        $this->refreshStats();
+        session()->flash('message', 'Message marked as read.');
+    }
+
+    public function markAsUnread($contactId)
+    {
+        $contact = Contact::findOrFail($contactId);
+        $contact->update(['is_read' => false]);
+        $this->refreshStats();
+        session()->flash('message', 'Message marked as unread.');
+    }
+
+    public function deleteContact($contactId)
+    {
+        $contact = Contact::findOrFail($contactId);
+        $contact->delete();
+        $this->refreshStats();
+        session()->flash('message', "Message from {$contact->name} has been deleted.");
     }
 
     public function render()
@@ -343,12 +370,16 @@ class Dashboard extends Component
             ->latest('created_at')
             ->paginate(10, pageName: 'blogs-page');
 
+        $contacts = Contact::latest('created_at')
+            ->paginate(10, pageName: 'contacts-page');
+
         return view('livewire.admin.dashboard', [
             'pendingCompanies' => $pendingCompanies,
             'jobs' => $jobs,
             'courses' => $courses,
             'students' => $students,
             'blogs' => $blogs,
+            'contacts' => $contacts,
         ]);
     }
 }

@@ -9,6 +9,7 @@
                 @elseif($activeTab === 'jobs') Job Postings
                 @elseif($activeTab === 'students') Student Directory
                 @elseif($activeTab === 'blogs') Blog Articles
+                @elseif($activeTab === 'contacts') Contact Messages
                 @endif
             </h1>
             <p class="text-base-content/60 mt-1">
@@ -18,6 +19,7 @@
                 @elseif($activeTab === 'jobs') Monitor and moderate active job listings.
                 @elseif($activeTab === 'students') View and manage registered students.
                 @elseif($activeTab === 'blogs') Create and publish blog articles.
+                @elseif($activeTab === 'contacts') Manage contact form submissions.
                 @endif
             </p>
         </div>
@@ -123,6 +125,21 @@
                                 <div class="stat-value text-3xl">{{ $stats['total_blogs'] }}</div>
                                 <div class="stat-desc mt-1 text-success font-bold">{{ $stats['published_blogs'] }}
                                     Published</div>
+                            </div>
+                        </div>
+
+                        {{-- Contact Messages --}}
+                        <div class="stats shadow-sm border border-base-200 bg-base-100/50 hover:border-warning/30 transition-all cursor-pointer group"
+                            wire:click="setTab('contacts')">
+                            <div class="stat">
+                                <div
+                                    class="stat-figure text-warning bg-warning/10 p-3 rounded-2xl group-hover:scale-110 transition-transform">
+                                    <x-icon name="o-envelope" class="w-7 h-7" />
+                                </div>
+                                <div class="stat-title font-medium">Contact Messages</div>
+                                <div class="stat-value text-3xl">{{ $stats['total_contacts'] }}</div>
+                                <div class="stat-desc mt-1 text-warning font-bold">{{ $stats['unread_contacts'] }}
+                                    Unread</div>
                             </div>
                         </div>
                     </div>
@@ -595,6 +612,103 @@
                         </div>
                         <h3 class="font-bold text-xl mb-1">No Students Yet</h3>
                         <p class="text-base-content/60 max-w-sm mx-auto">There are no registered students in the system.</p>
+                    </div>
+                @endif
+            @elseif($activeTab === 'contacts')
+                {{-- Contacts Management Section --}}
+                <div class="p-6 border-b border-base-200 bg-base-100">
+                    <h3 class="font-bold text-lg flex items-center gap-2">
+                        <x-icon name="o-envelope" class="w-5 h-5 text-primary" />
+                        Contact Form Submissions
+                    </h3>
+                    <p class="text-sm text-base-content/60 mt-1">View and manage contact messages from website visitors.</p>
+                </div>
+
+                @if($contacts->count() > 0)
+                    <div class="overflow-x-auto">
+                        <table class="table table-zebra table-lg">
+                            <thead>
+                                <tr class="bg-base-200/50 text-base-content">
+                                    <th class="pl-6">Name & Email</th>
+                                    <th>Subject</th>
+                                    <th>Message</th>
+                                    <th>Received</th>
+                                    <th>Status</th>
+                                    <th class="text-right pr-6">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($contacts as $contact)
+                                    <tr wire:key="contact-{{ $contact->id }}"
+                                        class="hover:bg-base-200/30 transition-colors {{ $contact->is_read ? '' : 'bg-warning/5' }}">
+                                        <td class="pl-6">
+                                            <div>
+                                                <div class="font-bold text-base {{ $contact->is_read ? '' : 'text-warning' }}">
+                                                    {{ $contact->name }}</div>
+                                                <div class="text-xs opacity-60">{{ $contact->email }}</div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="max-w-xs truncate">
+                                                {{ $contact->subject ?: '—' }}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="max-w-md truncate text-sm">
+                                                {{ $contact->message }}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="text-sm opacity-70">{{ $contact->created_at->format('M d, Y') }}</div>
+                                            <div class="text-xs opacity-50">{{ $contact->created_at->format('h:i A') }}</div>
+                                        </td>
+                                        <td>
+                                            @if($contact->is_read)
+                                                <div class="badge badge-ghost badge-sm">Read</div>
+                                            @else
+                                                <div class="badge badge-warning badge-sm">Unread</div>
+                                            @endif
+                                        </td>
+                                        <td class="text-right pr-6">
+                                            <div class="flex justify-end gap-2">
+                                                @if($contact->is_read)
+                                                    <button wire:click="markAsUnread({{ $contact->id }})"
+                                                        class="btn btn-ghost btn-sm text-warning hover:bg-warning/10"
+                                                        title="Mark as unread">
+                                                        <x-icon name="o-envelope" class="w-4 h-4" />
+                                                    </button>
+                                                @else
+                                                    <button wire:click="markAsRead({{ $contact->id }})"
+                                                        class="btn btn-ghost btn-sm text-success hover:bg-success/10"
+                                                        title="Mark as read">
+                                                        <x-icon name="o-envelope-open" class="w-4 h-4" />
+                                                    </button>
+                                                @endif
+                                                <button wire:click="deleteContact({{ $contact->id }})"
+                                                    wire:confirm="Are you sure you want to delete this message from {{ $contact->name }}?"
+                                                    class="btn btn-error btn-ghost btn-sm text-error">
+                                                    <x-icon name="o-trash" class="w-4 h-4" />
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Pagination -->
+                    <div class="p-4 border-t border-base-200 bg-base-50">
+                        {{ $contacts->links() }}
+                    </div>
+                @else
+                    <div class="text-center py-16 bg-base-50/50">
+                        <div
+                            class="bg-base-200 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-base-100 shadow-sm">
+                            <x-icon name="o-inbox" class="w-10 h-10 text-primary opacity-50" />
+                        </div>
+                        <h3 class="font-bold text-xl mb-1">No Messages Yet</h3>
+                        <p class="text-base-content/60 max-w-sm mx-auto">There are no contact form submissions at the moment.
+                        </p>
                     </div>
                 @endif
             @endif
