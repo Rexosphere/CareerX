@@ -22,7 +22,7 @@ new class extends Component {
     public function with(): array
     {
         // Build query for published blogs
-        $query = Blog::published()->with('author');
+        $query = Blog::published()->with(['author', 'company']);
 
         // Apply search filter
         if (!empty($this->search)) {
@@ -65,10 +65,8 @@ new class extends Component {
         {{-- Filter Chips --}}
         <div class="flex gap-2 flex-wrap items-center">
             @foreach($categories as $category)
-                <button
-                    wire:click="$set('selectedCategory', '{{ $category }}')"
-                    class="btn btn-sm {{ $selectedCategory === $category ? 'btn-primary' : 'btn-outline' }}"
-                >
+                <button wire:click="$set('selectedCategory', '{{ $category }}')"
+                    class="btn btn-sm {{ $selectedCategory === $category ? 'btn-primary' : 'btn-outline' }}">
                     {{ $category }}
                 </button>
             @endforeach
@@ -78,14 +76,18 @@ new class extends Component {
     {{-- Blog Grid --}}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
         @forelse($posts as $post)
-            <article class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 cursor-pointer">
+            <article
+                class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 cursor-pointer">
                 {{-- Image --}}
                 <figure class="relative h-48 overflow-hidden">
                     <div class="absolute inset-0 bg-base-300 animate-pulse"></div>
                     @if($post->featured_image)
-                        <img src="{{ asset('storage/' . $post->featured_image) }}" alt="{{ $post->title }}" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500 relative z-10" loading="lazy" />
+                        <img src="{{ asset('storage/' . $post->featured_image) }}" alt="{{ $post->title }}"
+                            class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500 relative z-10"
+                            loading="lazy" />
                     @else
-                        <div class="w-full h-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center relative z-10">
+                        <div
+                            class="w-full h-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center relative z-10">
                             <x-icon name="o-document-text" class="w-16 h-16 text-base-content/20" />
                         </div>
                     @endif
@@ -94,7 +96,8 @@ new class extends Component {
                 {{-- Card Body --}}
                 <div class="card-body p-5 flex flex-col h-full">
                     <div class="flex items-center gap-2 mb-2">
-                        <span class="badge badge-primary badge-outline badge-sm font-bold uppercase">{{ $post->category }}</span>
+                        <span
+                            class="badge badge-primary badge-outline badge-sm font-bold uppercase">{{ $post->category }}</span>
                     </div>
 
                     <h3 class="card-title text-lg leading-tight hover:text-primary transition-colors line-clamp-2">
@@ -107,11 +110,12 @@ new class extends Component {
 
                     <div class="mt-auto pt-4 flex items-center justify-between border-t border-base-300">
                         <div class="flex items-center gap-2 text-xs text-base-content/70">
-                            <span class="font-medium text-base-content">{{ $post->author->name ?? 'Anonymous' }}</span>
+                            <span class="font-medium text-base-content">{{ $post->getAuthorName() }}</span>
                             <span>•</span>
                             <span>{{ $post->published_at->format('M d, Y') }}</span>
                         </div>
-                        <a href="{{ route('blog.show', $post->slug) }}" wire:navigate class="text-primary text-sm font-semibold flex items-center gap-1 hover:gap-2 transition-all">
+                        <a href="{{ route('blog.show', $post->slug) }}" wire:navigate
+                            class="text-primary text-sm font-semibold flex items-center gap-1 hover:gap-2 transition-all">
                             Read More
                             <x-icon name="o-arrow-right" class="w-4 h-4" />
                         </a>
@@ -120,7 +124,8 @@ new class extends Component {
             </article>
         @empty
             <div class="col-span-full text-center py-16">
-                <div class="bg-base-200 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-base-100 shadow-sm">
+                <div
+                    class="bg-base-200 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-base-100 shadow-sm">
                     <x-icon name="o-document-text" class="w-10 h-10 text-primary opacity-50" />
                 </div>
                 <h3 class="font-bold text-xl mb-1">No Articles Found</h3>

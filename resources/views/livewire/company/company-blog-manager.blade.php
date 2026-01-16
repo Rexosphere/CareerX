@@ -232,7 +232,6 @@
                         <tr class="bg-base-200/50 text-base-content">
                             <th class="pl-6">Title</th>
                             <th>Status</th>
-                            <th>Approval Status</th>
                             <th>Submitted</th>
                             <th class="text-right pr-6">Actions</th>
                         </tr>
@@ -255,18 +254,6 @@
                                         <span class="badge badge-success">Published</span>
                                     @elseif($blog->status === 'archived')
                                         <span class="badge badge-error">Archived</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    @if($blog->is_approved)
-                                        <div class="flex items-center gap-2">
-                                            <span class="badge badge-success badge-sm">Approved</span>
-                                            @if($blog->approved_at)
-                                                <span class="text-xs opacity-60">{{ $blog->approved_at->format('M d') }}</span>
-                                            @endif
-                                        </div>
-                                    @else
-                                        <span class="badge badge-warning badge-sm">Pending Approval</span>
                                     @endif
                                 </td>
                                 <td>
@@ -307,7 +294,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="text-center py-16 bg-base-50/50">
+                                <td colspan="4" class="text-center py-16 bg-base-50/50">
                                     <div
                                         class="bg-base-200 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-base-100 shadow-sm">
                                         <x-icon name="o-document-text" class="w-10 h-10 text-primary opacity-50" />
