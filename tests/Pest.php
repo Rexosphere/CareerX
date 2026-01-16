@@ -64,7 +64,9 @@ function createVerifiedStudent(array $attributes = []): App\Models\User
  */
 function createCompany(array $attributes = []): App\Models\Company
 {
-    return App\Models\Company::factory()->create($attributes);
+    return App\Models\Company::factory()->create(array_merge([
+        'status' => 'active', // Set active status for tests to pass approval middleware
+    ], $attributes));
 }
 
 /**
