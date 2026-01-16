@@ -145,7 +145,6 @@
                     <div>
                         <h4 class="font-semibold mb-2">Address</h4>
                         <p class="text-base-content/70">
-                            Career Guidance Unit<br>
                             University of Moratuwa<br>
                             Katubedda, Moratuwa 10400<br>
                             Sri Lanka

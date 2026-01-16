@@ -46,7 +46,7 @@
             class="prose prose-lg prose-primary max-w-none bg-base-100 p-8 md:p-12 rounded-3xl border border-base-300 shadow-sm leading-relaxed">
             <h2 class="text-3xl font-black mb-10 text-base-content flex items-center gap-3">
                 <x-icon name="o-document-text" class="w-8 h-8 text-primary" />
-                Course Overview
+                Course Video
             </h2>
 
             @php
@@ -74,29 +74,7 @@
             </div>
 
             {{-- Curriculum section --}}
-            <div class="mt-16 pt-16 border-t border-base-200">
-                <h2 class="text-3xl font-black mb-6 text-base-content flex items-center gap-3">
-                    <x-icon name="o-list-bullet" class="w-8 h-8 text-primary" />
-                    Curriculum Overview
-                </h2>
 
-                <p class="text-base-content/70 mb-8 leading-relaxed">
-                    This course is structured into several comprehensive modules designed to take you from fundamentals
-                    to advanced real-world implementation.
-                </p>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    @foreach(['Introduction & Fundamentals', 'Intermediate Concepts', 'Advanced Techniques', 'Real-world Project Implementation'] as $index => $module)
-                        <div class="flex items-center gap-4 p-4 rounded-2xl bg-base-200/50 border border-base-300">
-                            <div
-                                class="w-10 h-10 rounded-xl bg-primary text-primary-content flex items-center justify-center font-black shrink-0">
-                                {{ $index + 1 }}
-                            </div>
-                            <span class="font-bold text-base-content">{{ $module }}</span>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
         </div>
     </div>
 </x-layouts.public>
