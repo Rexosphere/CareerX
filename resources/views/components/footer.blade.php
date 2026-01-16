@@ -16,9 +16,9 @@
                     class="h-12 w-auto object-contain mt-4 dark:hidden">
                 <img src="{{ asset('careerxlogo.avif') }}" alt="CareerX Logo"
                     class="h-12 w-auto object-contain mt-4 hidden dark:block">
-                <img src="{{ asset('sltlogo1.avif') }}" alt="SLT Logo 1" class="h-24 w-auto object-contain md:ml-24">
-                <img src="{{ asset('sltlogo2.avif') }}" alt="SLT Logo 2" class="h-24 w-auto object-contain md:ml-10">
                 <img src="{{ asset('Procomm.avif') }}" alt="Procomm Logo" class="h-32 w-auto object-contain mt-4">
+                <img src="{{ asset('sltlogo1.avif') }}" alt="SLT Logo 1" class="h-24 w-auto object-contain">
+                <img src="{{ asset('sltlogo2.avif') }}" alt="SLT Logo 2" class="h-24 w-auto object-contain md:ml-10">
             </div>
         </div>
     </div>
