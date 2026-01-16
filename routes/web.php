@@ -168,6 +168,10 @@ Route::middleware(['auth:web', 'verified'])->group(function () {
     Route::get('/academia', function () {
         return view('pages.academia.index');
     })->name('academia');
+
+    Route::get('/my-applications', function () {
+        return view('pages.jobs.my-applications');
+    })->name('my-applications');
 });
 
 Route::match(['get', 'post'], '/logout', LogoutController::class)->name('logout');
