@@ -108,6 +108,7 @@ Route::post('/reset-password', [NewPasswordController::class, 'store'])
 // Admin Routes
 Route::middleware(['auth:admin'])->group(function () {
     Route::get('/admin/dashboard', AdminDashboard::class)->name('admin.dashboard');
+    Route::get('/admin/blogs', \App\Livewire\Admin\BlogManagement::class)->name('admin.blogs');
 });
 
 // Company Routes
@@ -144,6 +145,7 @@ Route::middleware(['auth:company', \App\Http\Middleware\EnsureCompanyIsApproved:
     // Reuse dashboard for company for now if needed, or redirect
     // Reuse dashboard for company for now if needed, or redirect
     Route::get('/company/dashboard', \App\Livewire\Company\Dashboard::class)->name('company.dashboard');
+    Route::get('/company/blogs', \App\Livewire\Company\CompanyBlogManager::class)->name('company.blogs');
 });
 
 // Email Verification Routes

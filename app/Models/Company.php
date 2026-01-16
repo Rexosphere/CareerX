@@ -36,6 +36,11 @@ class Company extends Authenticatable
         return $this->hasMany(JobPosting::class);
     }
 
+    public function blogs()
+    {
+        return $this->hasMany(Blog::class);
+    }
+
     public function initials(): string
     {
         return collect(explode(' ', $this->name))
