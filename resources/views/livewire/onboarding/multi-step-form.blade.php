@@ -26,8 +26,55 @@ new class extends Component {
     #[Validate('nullable|file|mimes:pdf|max:5120')]
     public $cv_file = null;
 
+    public array $departmentsList = [];
+
     public function mount(): void
     {
+        // Initialize departments list
+        $this->departmentsList = [
+            // Faculty of Architecture
+            ['id' => 'Department of Architecture', 'name' => 'Department of Architecture'],
+            ['id' => 'Department of Building Economics', 'name' => 'Department of Building Economics'],
+            ['id' => 'Department of Town and Country Planning', 'name' => 'Department of Town and Country Planning'],
+            ['id' => 'Department of Integrated Design', 'name' => 'Department of Integrated Design'],
+
+            // Faculty of Engineering
+            ['id' => 'Department of Chemical and Process Engineering', 'name' => 'Department of Chemical and Process Engineering'],
+            ['id' => 'Department of Civil Engineering', 'name' => 'Department of Civil Engineering'],
+            ['id' => 'Department of Computer Science and Engineering', 'name' => 'Department of Computer Science and Engineering'],
+            ['id' => 'Department of Earth Resources Engineering', 'name' => 'Department of Earth Resources Engineering'],
+            ['id' => 'Department of Electrical Engineering', 'name' => 'Department of Electrical Engineering'],
+            ['id' => 'Department of Electronic and Telecommunication Engineering', 'name' => 'Department of Electronic and Telecommunication Engineering'],
+            ['id' => 'Department of Materials Science and Engineering', 'name' => 'Department of Materials Science and Engineering'],
+            ['id' => 'Department of Mechanical Engineering', 'name' => 'Department of Mechanical Engineering'],
+            ['id' => 'Department of Textile and Apparel Engineering', 'name' => 'Department of Textile and Apparel Engineering'],
+            ['id' => 'Department of Transport Management and Logistic Engineering', 'name' => 'Department of Transport Management and Logistic Engineering'],
+
+            // Faculty of Information Technology
+            ['id' => 'Department of Information Technology', 'name' => 'Department of Information Technology'],
+            ['id' => 'Department of Computational Mathematics', 'name' => 'Department of Computational Mathematics'],
+            ['id' => 'Department of Interdisciplinary Studies', 'name' => 'Department of Interdisciplinary Studies'],
+
+            // Faculty of Business
+            ['id' => 'Department of Decision Sciences', 'name' => 'Department of Decision Sciences'],
+            ['id' => 'Department of Industrial Management', 'name' => 'Department of Industrial Management'],
+            ['id' => 'Department of Management of Technology', 'name' => 'Department of Management of Technology'],
+
+            // Faculty of Medicine
+            ['id' => 'Department of Anatomy', 'name' => 'Department of Anatomy'],
+            ['id' => 'Department of Biochemistry and Clinical Chemistry', 'name' => 'Department of Biochemistry and Clinical Chemistry'],
+            ['id' => 'Department of Medical Education', 'name' => 'Department of Medical Education'],
+            ['id' => 'Department of Medical Technology', 'name' => 'Department of Medical Technology'],
+            ['id' => 'Department of Medicine and Mental Health', 'name' => 'Department of Medicine and Mental Health'],
+            ['id' => 'Department of Microbiology and Parasitology', 'name' => 'Department of Microbiology and Parasitology'],
+            ['id' => 'Department of Pathology and Forensic Medicine', 'name' => 'Department of Pathology and Forensic Medicine'],
+            ['id' => 'Department of Pediatrics and Neonatology', 'name' => 'Department of Pediatrics and Neonatology'],
+            ['id' => 'Department of Pharmacology', 'name' => 'Department of Pharmacology'],
+            ['id' => 'Department of Physiology', 'name' => 'Department of Physiology'],
+            ['id' => 'Department of Public Health and Family Medicine', 'name' => 'Department of Public Health and Family Medicine'],
+            ['id' => 'Department of Surgery and Anesthesia', 'name' => 'Department of Surgery and Anesthesia'],
+        ];
+
         // Initialize with demo data for Step 2
         $this->skills = ['Java', 'Project Management', 'UI/UX Design'];
     }
@@ -77,23 +124,12 @@ new class extends Component {
             $cvPath = $this->cv_file->store('cvs', 'public');
         }
 
-        // Map department abbreviation to full course name
-        $departmentMap = [
-            'cse' => 'Computer Science & Engineering',
-            'entc' => 'Electronic & Telecommunication Engineering',
-            'civil' => 'Civil Engineering',
-            'mech' => 'Mechanical Engineering',
-            'it' => 'Information Technology',
-            'archi' => 'Architecture',
-            'nds' => 'Interdisciplinary Studies',
-        ];
-
         // Create or update student profile
         auth()->user()->studentProfile()->updateOrCreate(
             ['user_id' => auth()->id()],
             [
                 'student_id' => $this->student_id,
-                'course' => $departmentMap[$this->department] ?? $this->department,
+                'course' => $this->department,
                 'year' => 1, // Default to first year, can be enhanced later
                 'bio' => $this->about_me,
                 'skills' => $this->skills,
@@ -151,20 +187,11 @@ new class extends Component {
         @if ($currentStep === 1)
             <form wire:submit="nextStep" class="space-y-4">
                 <!-- Student ID -->
-                <x-input label="Student ID" wire:model="student_id" icon="o-identification"
-                    placeholder="e.g. 190000X" class="uppercase" />
+                <x-input label="Student ID" wire:model="student_id" icon="o-identification" placeholder="e.g. 190000X"
+                    class="uppercase" />
 
                 <!-- Department -->
-                <x-select label="Department" wire:model="department" icon="o-academic-cap" :options="[
-                ['id' => '', 'name' => 'Select your department'],
-                ['id' => 'cse', 'name' => 'Computer Science & Engineering'],
-                ['id' => 'entc', 'name' => 'Electronic & Telecommunication Engineering'],
-                ['id' => 'civil', 'name' => 'Civil Engineering'],
-                ['id' => 'mech', 'name' => 'Mechanical Engineering'],
-                ['id' => 'it', 'name' => 'Information Technology'],
-                ['id' => 'archi', 'name' => 'Architecture'],
-                ['id' => 'nds', 'name' => 'Interdisciplinary Studies'],
-            ]"
+                <x-select label="Department" wire:model="department" icon="o-academic-cap" :options="$departmentsList"
                     option-value="id" option-label="name" />
 
                 <!-- About Me -->
