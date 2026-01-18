@@ -24,7 +24,6 @@ class StudentProfile extends Model
         'linkedin',
         'github',
         'portfolio',
-        'gpa',
         'available_for_hire',
     ];
 
@@ -33,7 +32,6 @@ class StudentProfile extends Model
         'experience' => 'array',
         'projects' => 'array',
         'available_for_hire' => 'boolean',
-        'gpa' => 'float',
         'year' => 'integer',
     ];
 

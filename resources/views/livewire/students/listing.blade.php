@@ -66,7 +66,6 @@ new class extends Component {
                 'name' => $profile->user->name ?? 'Unknown',
                 'department' => $profile->course ?? 'Not specified',
                 'year' => $profile->year ?? 1,
-                'gpa' => $profile->gpa ?? 0.0,
                 'avatar' => $avatarUrl,
                 'skills' => array_slice($skills, 0, 3), // Show max 3 skills
                 'available' => $profile->available_for_hire ?? false,
@@ -225,8 +224,7 @@ new class extends Component {
                             <div class="text-center flex flex-col gap-1">
                                 <h3 class="card-title text-lg justify-center">{{ $student['name'] }}</h3>
                                 <p class="text-sm text-base-content/70 font-medium">{{ $student['department'] }}</p>
-                                <p class="text-xs text-base-content/60">Year {{ $student['year'] }} • {{ $student['gpa'] }}
-                                    GPA</p>
+                                <p class="text-xs text-base-content/60">Year {{ $student['year'] }}</p>
                             </div>
 
                             {{-- Skills --}}
